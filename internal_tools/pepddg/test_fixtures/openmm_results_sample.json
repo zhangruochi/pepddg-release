@@ -1,0 +1,22 @@
+{
+  "wt_results": {
+    "T1_A2V": {
+      "e_cross_interface_total_screened_heavy_kcal_mol": -15.5,
+      "dg_bind_kcal_mol": -8.2
+    },
+    "T1_A3G": {
+      "e_cross_interface_total_screened_heavy_kcal_mol": -15.5,
+      "dg_bind_kcal_mol": -8.2
+    }
+  },
+  "mut_results": {
+    "T1_A2V": {
+      "e_cross_interface_total_screened_heavy_kcal_mol": -12.3,
+      "dg_bind_kcal_mol": -5.1
+    },
+    "T1_A3G": {
+      "e_cross_interface_total_screened_heavy_kcal_mol": -16.8,
+      "dg_bind_kcal_mol": -9.5
+    }
+  }
+}

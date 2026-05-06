@@ -1,0 +1,207 @@
+{
+  "cohort_identity": {
+    "datasets": {
+      "bpti": {
+        "n_rows": 456,
+        "n_targets": 2,
+        "row_identity_hash": "2275851907db41884441ea7d45502f41dd7cf0eaebb83ddd13c79fd00b69aa45",
+        "row_identity_schema": [
+          "target",
+          "original_row_index"
+        ],
+        "sha256": "7f57dd8412b1effe55832305684d8ce217bedc8921087abc9c05c3b980acdae5",
+        "source_path": "research/pepddg_v5/results/v19_sanitized_baseline/bpti_eval_v19.csv",
+        "target_list_hash": "3a2898fcbf4c29f42c57ef6115750f80b01b6b8e4d7652eeeb6a7abdd2da363c",
+        "valid_rows_for_all_modes": 456,
+        "zs_production_scoring": {
+          "anchor_source": "rankscore_3view_base",
+          "mode": "zs",
+          "score_column": "rankscore_pepddg_zs",
+          "used_columns": [
+            "rankscore_3view_base"
+          ]
+        }
+      },
+      "main": {
+        "n_rows": 332,
+        "n_targets": 33,
+        "row_identity_hash": "0ac7b99e640d9e905dd7c4d198d5d537bd8de6f416d89c0e5963794919c6426b",
+        "row_identity_schema": [
+          "target",
+          "original_row_index"
+        ],
+        "sha256": "ad25ce3077698d38a2ec780da2a42b1505f088fe19269df0f3b86d0a18a5c942",
+        "source_path": "research/pepddg_v5/results/v19_sanitized_baseline/main_eval_v19.csv",
+        "target_list_hash": "116f6324b6238a96c68f023a6c8496db47beab2dc369bbb669aefe70766a8b0b",
+        "valid_rows_for_all_modes": 332,
+        "zs_production_scoring": {
+          "anchor_source": "rankscore_3view_base",
+          "mode": "zs",
+          "score_column": "rankscore_pepddg_zs",
+          "used_columns": [
+            "rankscore_3view_base"
+          ]
+        }
+      },
+      "ood": {
+        "n_rows": 745,
+        "n_targets": 4,
+        "row_identity_hash": "f44055ed90ae3940816c40f2711e7411de84339b2501e16163d0b37084504847",
+        "row_identity_schema": [
+          "target",
+          "original_row_index"
+        ],
+        "sha256": "458bc7e54be008c2e7543a162a38dc0de6e3e607d91363640efc803431a4c11a",
+        "source_path": "research/pepddg_v5/results/v19_sanitized_baseline/ood_eval_v19.csv",
+        "target_list_hash": "a5632654b423034af27f9233254c97bd86d4a006e07bfc844d46fc562024082d",
+        "valid_rows_for_all_modes": 745,
+        "zs_production_scoring": {
+          "anchor_source": "rankscore_3view_base",
+          "mode": "zs",
+          "score_column": "rankscore_pepddg_zs",
+          "used_columns": [
+            "rankscore_3view_base"
+          ]
+        }
+      }
+    },
+    "row_key_note": "Source CSVs do not expose mutation identifiers; row identity is audited by target plus original row index.",
+    "row_key_schema": [
+      "target",
+      "original_row_index"
+    ]
+  },
+  "created_utc": "2026-04-24T03:41:33Z",
+  "headline": {
+    "cal_bpti_rho": 0.7121243607250748,
+    "cal_main_ci_hi": 0.7696711330592454,
+    "cal_main_ci_lo": 0.6122254100427456,
+    "cal_main_rho": 0.6908636100957134,
+    "cal_ood_rho": 0.23534660137316027,
+    "cal_score_column": "rankscore_3view_v19_strict3",
+    "main_ci_hi": 0.7078959993425558,
+    "main_ci_lo": 0.5192060230325495,
+    "main_mode": "zs",
+    "main_rho": 0.6188807648016849,
+    "main_score_column": "rankscore_pepddg_zs",
+    "zs_bpti_rho": 0.7707990730909078,
+    "zs_ood_rho": 0.23451944323684604
+  },
+  "metric_method": {
+    "bootstrap_resample_unit": "target",
+    "bootstrap_resamples": 1000,
+    "bootstrap_seed": 20260302,
+    "bootstrap_seed_derivation": "bootstrap_seed + sha256(dataset:mode:score_column) prefix",
+    "confidence_interval": "target-stratified bootstrap percentile 95%",
+    "correlation": "scipy.stats.spearmanr",
+    "score_rank_policy": "stable normalized ascending ranks for ZS derivation",
+    "spearman_tie_policy": "scipy average ranks"
+  },
+  "modes": {
+    "cal": {
+      "bpti": {
+        "ci_hi": 0.7121243607250748,
+        "ci_lo": 0.2274275901939602,
+        "is_calibration_counts": {
+          "false": 364,
+          "true": 92
+        },
+        "n_rows": 456,
+        "n_targets": 2,
+        "n_valid_rows": 456,
+        "rho": 0.7121243607250748,
+        "score_column": "rankscore_3view_v19_strict3",
+        "sha256": "7f57dd8412b1effe55832305684d8ce217bedc8921087abc9c05c3b980acdae5",
+        "source_path": "research/pepddg_v5/results/v19_sanitized_baseline/bpti_eval_v19.csv",
+        "variant": "pepddg_cal_v19"
+      },
+      "main": {
+        "ci_hi": 0.7696711330592454,
+        "ci_lo": 0.6122254100427456,
+        "is_calibration_counts": {
+          "false": 225,
+          "true": 107
+        },
+        "n_rows": 332,
+        "n_targets": 33,
+        "n_valid_rows": 332,
+        "rho": 0.6908636100957134,
+        "score_column": "rankscore_3view_v19_strict3",
+        "sha256": "ad25ce3077698d38a2ec780da2a42b1505f088fe19269df0f3b86d0a18a5c942",
+        "source_path": "research/pepddg_v5/results/v19_sanitized_baseline/main_eval_v19.csv",
+        "variant": "pepddg_cal_v19"
+      },
+      "ood": {
+        "ci_hi": 0.6912183241375073,
+        "ci_lo": 0.0376170163520011,
+        "is_calibration_counts": {
+          "false": 595,
+          "true": 150
+        },
+        "n_rows": 745,
+        "n_targets": 4,
+        "n_valid_rows": 745,
+        "rho": 0.23534660137316027,
+        "score_column": "rankscore_3view_v19_strict3",
+        "sha256": "458bc7e54be008c2e7543a162a38dc0de6e3e607d91363640efc803431a4c11a",
+        "source_path": "research/pepddg_v5/results/v19_sanitized_baseline/ood_eval_v19.csv",
+        "variant": "pepddg_cal_v19"
+      }
+    },
+    "zs": {
+      "bpti": {
+        "ci_hi": 0.7707990730909078,
+        "ci_lo": 0.3380366253339908,
+        "derivation": "rankscore_pepddg_zs=stable_rank(rankscore_3view_base)",
+        "is_calibration_counts": {
+          "false": 364,
+          "true": 92
+        },
+        "n_rows": 456,
+        "n_targets": 2,
+        "n_valid_rows": 456,
+        "rho": 0.7707990730909078,
+        "score_column": "rankscore_pepddg_zs",
+        "sha256": "7f57dd8412b1effe55832305684d8ce217bedc8921087abc9c05c3b980acdae5",
+        "source_path": "research/pepddg_v5/results/v19_sanitized_baseline/bpti_eval_v19.csv",
+        "source_score_column": "rankscore_3view_base"
+      },
+      "main": {
+        "ci_hi": 0.7078959993425558,
+        "ci_lo": 0.5192060230325495,
+        "derivation": "rankscore_pepddg_zs=stable_rank(rankscore_3view_base)",
+        "is_calibration_counts": {
+          "false": 225,
+          "true": 107
+        },
+        "n_rows": 332,
+        "n_targets": 33,
+        "n_valid_rows": 332,
+        "rho": 0.6188807648016849,
+        "score_column": "rankscore_pepddg_zs",
+        "sha256": "ad25ce3077698d38a2ec780da2a42b1505f088fe19269df0f3b86d0a18a5c942",
+        "source_path": "research/pepddg_v5/results/v19_sanitized_baseline/main_eval_v19.csv",
+        "source_score_column": "rankscore_3view_base"
+      },
+      "ood": {
+        "ci_hi": 0.7262274138655798,
+        "ci_lo": 0.04115109743143855,
+        "derivation": "rankscore_pepddg_zs=stable_rank(rankscore_3view_base)",
+        "is_calibration_counts": {
+          "false": 595,
+          "true": 150
+        },
+        "n_rows": 745,
+        "n_targets": 4,
+        "n_valid_rows": 745,
+        "rho": 0.23451944323684604,
+        "score_column": "rankscore_pepddg_zs",
+        "sha256": "458bc7e54be008c2e7543a162a38dc0de6e3e607d91363640efc803431a4c11a",
+        "source_path": "research/pepddg_v5/results/v19_sanitized_baseline/ood_eval_v19.csv",
+        "source_score_column": "rankscore_3view_base"
+      }
+    }
+  },
+  "release_id": "2026-04-23-zs-cal-neurips",
+  "schema_version": "pepddg-zs-cal-release-v1"
+}

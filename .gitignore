@@ -1,0 +1,24 @@
+# Python build / cache
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# Test / type-check caches
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# Virtualenvs
+.venv/
+env/
+
+# IDE / OS
+.vscode/
+.DS_Store
+
+# Local scoring outputs from minimal_example
+internal_tools/pepddg/minimal_example/output/*
+!internal_tools/pepddg/minimal_example/output/.gitignore

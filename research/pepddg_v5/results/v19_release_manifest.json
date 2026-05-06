@@ -1,0 +1,24 @@
+{
+  "active_release": {
+    "canonical_metrics_source": "research/pepddg_v5/results/zs_cal_neurips_release/paper_numbers_zs_cal.json",
+    "official_conclusion_dir": "research/pepddg_v5/results/zs_cal_neurips_release",
+    "release_id": "2026-04-23-zs-cal-neurips",
+    "release_manifest": "research/pepddg_v5/results/zs_cal_neurips_release/release_manifest_zs_cal.json"
+  },
+  "created_utc": "2026-04-23T00:00:00Z",
+  "historical_v19": {
+    "canonical_metrics_source": "research/pepddg_v5/results/v19_sanitized_baseline/paper_numbers_v19.json",
+    "official_conclusion_dir": "research/pepddg_v5/results/v19_sanitized_baseline",
+    "status": "historical_calibrated_baseline"
+  },
+  "notes": [
+    "Baseline score column is rankscore_3view_v19_strict3.",
+    "paper_artifact_dir restores metadata for plotting/audit while preserving v19 locked scores.",
+    "The headline is rho=0.691 with 95% CI [0.612, 0.767] on 332 mutations across 33 targets.",
+    "PepDDG-ZS is the active zero-shot manuscript algorithm; PepDDG-Cal/v19 is retained as a calibrated ablation."
+  ],
+  "official_conclusion_dir": "research/pepddg_v5/results/v19_sanitized_baseline",
+  "official_policy": "Active anonymous-submission paper numbers must reference research/pepddg_v5/results/zs_cal_neurips_release/paper_numbers_zs_cal.json; v19_sanitized_baseline/paper_numbers_v19.json is historical Cal-only evidence.",
+  "paper_artifact_dir": "research/pepddg_v5/results/v19_sanitized_baseline",
+  "version": "v19"
+}

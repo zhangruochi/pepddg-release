@@ -1,0 +1,17 @@
+{
+  "active_algorithm": "PepDDG-ZS",
+  "calibrated_ablation": "PepDDG-Cal",
+  "canonical_metrics_sha256": "adbfdae45903ce4a441d64ce22fd925f1b01d20c2783061fb272b9b35d1d2d10",
+  "canonical_metrics_source": "research/pepddg_v5/results/zs_cal_neurips_release/paper_numbers_zs_cal.json",
+  "created_utc": "2026-04-24T03:41:33Z",
+  "legacy_v19_manifest": "research/pepddg_v5/results/v19_release_manifest.json",
+  "legacy_v19_manifest_sha256_before_update": "ae91a34645c8c4945ac346bf9f684145ce53476b5adee826455a1f27c314257e",
+  "legacy_v19_metrics_source": "research/pepddg_v5/results/v19_sanitized_baseline/paper_numbers_v19.json",
+  "official_policy": "NeurIPS paper numbers must come from paper_numbers_zs_cal.json; paper_numbers_v19.json is historical Cal-only evidence.",
+  "release_id": "2026-04-23-zs-cal-neurips",
+  "source_csvs": [
+    "research/pepddg_v5/results/v19_sanitized_baseline/main_eval_v19.csv",
+    "research/pepddg_v5/results/v19_sanitized_baseline/bpti_eval_v19.csv",
+    "research/pepddg_v5/results/v19_sanitized_baseline/ood_eval_v19.csv"
+  ]
+}

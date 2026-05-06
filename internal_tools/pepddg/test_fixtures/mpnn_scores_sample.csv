@@ -1,0 +1,6 @@
+target,mutation,wt_aa,mut_aa,mpnn_logp_wt_complex,mpnn_logp_mut_complex,mpnn_logp_wt_chain,mpnn_logp_mut_chain
+T1,A2V,A,V,-2.5,-1.8,-3.0,-2.0
+T1,A3G,A,G,-2.5,-3.5,-3.0,-4.2
+T1,A4L,A,L,-2.5,-2.0,-3.0,-2.8
+T2,G1A,G,A,-1.0,-1.5,-1.2,-1.8
+T2,V5I,V,I,-2.0,-1.9,-2.5,-2.3

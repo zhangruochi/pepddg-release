@@ -1,0 +1,42 @@
+# PepDDG default configuration.
+
+input_csv: /path/to/input_features.csv
+output_csv: /path/to/output_scored.csv
+output_dir: /path/to/output_dir
+
+mode: zs
+score_column: rankscore_pepddg_zs
+anchor_column: rankscore_3view_base
+anchor_preference:
+  - rankscore_3view_base
+strict_anchor: false
+
+baseline_column_for_delta: rankscore_3view_base
+
+write_auxiliary_columns: true
+write_run_manifest: true
+write_policy_audit: true
+write_gate_metrics: true
+
+variant_name: pepddg_zs
+seed: 20260302
+
+banned_patterns:
+  - foldx
+  - rosetta
+  - cartddg
+  - stabddg
+  - esm2
+  - esmif
+  - esm3
+  - saprot
+  - diffaffinity
+
+# Optional safety boundary. Keep empty to disable.
+allowed_output_roots: []
+
+weights:
+  w_neg: -0.37744658504381534
+  w_bind: -0.3740327505870402
+  w_disp_pen: -0.017201058980289563
+  w_m: 0.9446730912058925
