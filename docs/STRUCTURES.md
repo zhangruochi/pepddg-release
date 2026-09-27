@@ -53,7 +53,10 @@ pepddg score-structures \
   --output /path/to/new-results
 ```
 
-`--output` must be absent or empty. For a research workflow the default
+`--output` must be absent, empty, or contain only a matching `.pepddg-work`
+checkpoint from an interrupted run. Reissue the identical command to resume;
+changed structure, mutation list, protocol, checkpoint or producer code is
+rejected. For a research workflow the default
 `--n-restarts 7` keeps the historical paired-restart setting; smaller values
 are for plumbing checks and are not paper-equivalent. `--seed` fixes the
 OpenMM and ProteinMPNN random generators. `--platform CPU` is the default;
@@ -100,9 +103,10 @@ Successful output directory contents:
 | `features.csv` | Unranked complete raw-channel table with target, parent and mutation identities |
 | `scores.csv` | Same cohort after frozen PepDDG rank fusion |
 | `provenance.json` | Input/checkpoint hashes, excluded water count, selected protocol, seed, restart count and channel keys |
+| `.pepddg-work/` | Hashed, resumable WT and per-mutation intermediate results |
 
 No score files are written until every requested mutation has validated
-channels. Failed jobs can leave transient work in a system temp directory;
+channels. Failed jobs retain completed mutation work for an exact-input retry;
 they never supply partial ranks. Keep the mutation list and the full input
 structure with the result. A numerical result is a model prediction, not a
 measurement. For the status of paper-level SKEMPI reproduction, see

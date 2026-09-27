@@ -1,6 +1,7 @@
 """Regression tests for new-structure orchestration and paired restart semantics."""
 
 from pathlib import Path
+from dataclasses import replace
 import subprocess
 import sys
 
@@ -105,3 +106,54 @@ def test_mmcif_conversion_keeps_selected_chains(tmp_path: Path) -> None:
     observed = gemmi.read_structure(str(converted))
     assert {chain.name for chain in observed[0]} == {"A", "B"}
     assert len(observed[0]["A"]) == len(observed[0]["B"]) == 1
+
+
+def test_interrupted_cohort_resumes_completed_mutations(tmp_path: Path, monkeypatch) -> None:
+    import pepddg.structural_pipeline as pipeline
+
+    first = _spec(tmp_path)
+    second = MutationSpec("G5V", "B", 5, "", "G", "V")
+    spec = replace(first, mutations=(first.mutations[0], second))
+    monkeypatch.setattr(pipeline, "_build_variant_pdb", lambda base, variant, output: str(base))
+    monkeypatch.setattr(pipeline, "_score_mpnn", lambda *a, **k: {"G5A": (0.2, 0.4), "G5V": (0.3, 0.5)})
+    calls = []
+
+    def physics(pdb_path, receptor_chain, ligand_chain, **kwargs):
+        calls.append(len(calls))
+        if len(calls) == 3:
+            raise RuntimeError("simulated interruption")
+        offset = float(len(calls))
+        return {
+            "dg_bind_kcal_mol_restarts": [offset] * 3,
+            "e_cross_interface_total_screened_kcal_mol_restarts": [offset] * 3,
+        }
+
+    monkeypatch.setattr(pipeline, "_score_openmm", physics)
+    output = tmp_path / "out"
+    with pytest.raises(RuntimeError, match="interruption"):
+        run_structural_cohort(spec, target="T", parent_id="WT", output_dir=output, n_restarts=3)
+    assert not (output / "scores.csv").exists()
+    assert (output / ".pepddg-work" / "mutations" / "0000.json").exists()
+
+    result = run_structural_cohort(spec, target="T", parent_id="WT", output_dir=output, n_restarts=3)
+    assert result.features["mutation"].tolist() == ["G5A", "G5V"]
+    assert len(calls) == 4
+    assert (output / "scores.csv").exists()
+
+
+def test_changed_input_refuses_saved_partial_work(tmp_path: Path, monkeypatch) -> None:
+    import pepddg.structural_pipeline as pipeline
+
+    spec = _spec(tmp_path)
+    monkeypatch.setattr(pipeline, "_build_variant_pdb", lambda base, variant, output: str(base))
+    monkeypatch.setattr(pipeline, "_score_mpnn", lambda *a, **k: {"G5A": (0.2, 0.4)})
+
+    def physics(*args, **kwargs):
+        raise RuntimeError("simulated interruption")
+
+    monkeypatch.setattr(pipeline, "_score_openmm", physics)
+    output = tmp_path / "out"
+    with pytest.raises(RuntimeError, match="interruption"):
+        run_structural_cohort(spec, target="T", parent_id="WT", output_dir=output, n_restarts=3)
+    with pytest.raises(ValueError, match="checkpoint identity"):
+        run_structural_cohort(spec, target="T", parent_id="WT", output_dir=output, n_restarts=4)

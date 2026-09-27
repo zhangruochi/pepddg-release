@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from hashlib import sha256
 import json
 import math
+import os
 from pathlib import Path
 import tempfile
 from typing import Any, Sequence
@@ -21,6 +22,7 @@ from .structural_features import MutationSite, compute_structural_features_batch
 
 _BIND_KEY = "dg_bind_kcal_mol_restarts"
 _XINT_KEY = "e_cross_interface_total_screened_kcal_mol_restarts"
+_CHECKPOINT_SCHEMA = "pepddg-structural-checkpoint/v1"
 
 
 @dataclass(frozen=True)
@@ -28,6 +30,42 @@ class StructuralResult:
     features: pd.DataFrame
     scores: ScoreResult
     provenance: dict[str, Any]
+
+
+def _digest_json(value: Any) -> str:
+    return sha256(json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()).hexdigest()
+
+
+def _normalized_checkpoint(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {str(key): _normalized_checkpoint(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple, np.ndarray)):
+        return [_normalized_checkpoint(item) for item in value]
+    if isinstance(value, np.generic):
+        return _normalized_checkpoint(value.item())
+    if isinstance(value, float) and not math.isfinite(value):
+        return None
+    return value
+
+
+def _save_checkpoint(path: Path, identity: str, payload: Any) -> None:
+    payload = _normalized_checkpoint(payload)
+    record = {"identity_sha256": identity, "payload": payload, "payload_sha256": _digest_json(payload)}
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(json.dumps(record, sort_keys=True, allow_nan=False) + "\n")
+    os.replace(temporary, path)
+
+
+def _load_checkpoint(path: Path, identity: str) -> Any:
+    try:
+        record = json.loads(path.read_text())
+        if record["identity_sha256"] != identity:
+            raise ValueError("checkpoint identity mismatch")
+        if record["payload_sha256"] != _digest_json(record["payload"]):
+            raise ValueError("checkpoint payload hash mismatch")
+        return record["payload"]
+    except (OSError, KeyError, TypeError, json.JSONDecodeError) as exc:
+        raise ValueError(f"invalid checkpoint: {path}") from exc
 
 
 def paired_restart_ddg(wild_type: Sequence[float], mutant: Sequence[float]) -> float:
@@ -163,8 +201,6 @@ def run_structural_cohort(
     if not weights.is_file():
         raise FileNotFoundError(f"ProteinMPNN v_48_020 checkpoint is absent: {weights}")
     destination = Path(output_dir)
-    if destination.exists() and any(destination.iterdir()):
-        raise FileExistsError("output directory must be absent or empty")
     exclusions = [f"{mutation.chain}:{mutation.resnum}" for mutation in spec.mutations]
     exclusions = list(dict.fromkeys(exclusions))
     kwargs = dict(
@@ -175,21 +211,68 @@ def run_structural_cohort(
         coulomb_screening_distance_nm=0.10, coulomb_screening_dielectric=80.0,
         restraint_exclusion_distance_a=10.0, random_seed=seed,
     )
+    source_files = [
+        Path(__file__), Path(__file__).parent / "api.py",
+        Path(__file__).parent / "_backend/implicit_relax_score.py",
+        Path(__file__).parent / "_backend/variant_builder.py",
+        Path(__file__).parent / "_backend/mpnn_scoring_legacy.py",
+    ]
+    identity = _digest_json({
+        "schema": _CHECKPOINT_SCHEMA, "structure_sha256": validation.structure_sha256,
+        "target": target.strip(), "parent_id": parent_id.strip(),
+        "peptide_chain": spec.peptide_chain, "receptor_chains": spec.receptor_chains,
+        "mutations": [mutation.__dict__ for mutation in spec.mutations],
+        "closure": spec.closure_kind, "protocol": kwargs,
+        "checkpoint_sha256": sha256(weights.read_bytes()).hexdigest(),
+        "source_sha256": {path.name: sha256(path.read_bytes()).hexdigest() for path in source_files},
+    })
+    checkpoint_dir = destination / ".pepddg-work"
+    manifest = checkpoint_dir / "manifest.json"
+    if destination.exists():
+        entries = {path.name for path in destination.iterdir()}
+        if entries - {checkpoint_dir.name}:
+            raise FileExistsError("output directory already contains final or unrelated files")
+        if checkpoint_dir.exists() and not manifest.is_file():
+            raise ValueError("checkpoint manifest is missing")
+        if manifest.is_file():
+            saved = _load_checkpoint(manifest, identity)
+            if saved != {"schema": _CHECKPOINT_SCHEMA}:
+                raise ValueError("checkpoint manifest schema mismatch")
+    checkpoint_dir.joinpath("mutations").mkdir(parents=True, exist_ok=True)
+    if not manifest.exists():
+        _save_checkpoint(manifest, identity, {"schema": _CHECKPOINT_SCHEMA})
     with tempfile.TemporaryDirectory(prefix="pepddg-structural-") as scratch:
         work = Path(scratch)
         base = _selected_pdb(spec, work / "selected.pdb")
         wt_pdb = Path(_build_variant_pdb(base, None, work / "wt"))
-        wt = _score_openmm(
-            str(wt_pdb), spec.receptor_chains[0], spec.peptide_chain,
-            **kwargs, restraint_exclusion_residues=exclusions,
-        )
-        mpnn = _score_mpnn(wt_pdb, spec, seed, weights)
+        wt_checkpoint = checkpoint_dir / "wt.json"
+        if wt_checkpoint.exists():
+            wt = _load_checkpoint(wt_checkpoint, identity)
+        else:
+            wt = _score_openmm(
+                str(wt_pdb), spec.receptor_chains[0], spec.peptide_chain,
+                **kwargs, restraint_exclusion_residues=exclusions,
+            )
+            _save_checkpoint(wt_checkpoint, identity, wt)
+        mpnn_checkpoint = checkpoint_dir / "mpnn.json"
+        if mpnn_checkpoint.exists():
+            mpnn = _load_checkpoint(mpnn_checkpoint, identity)
+        else:
+            mpnn = _score_mpnn(wt_pdb, spec, seed, weights)
+            _save_checkpoint(mpnn_checkpoint, identity, mpnn)
         sites = [MutationSite(m.chain, m.resnum, m.wt, m.mut, m.label) for m in spec.mutations]
         geometry = compute_structural_features_batch(
             base, sites, spec.peptide_chain, list(spec.receptor_chains)
         ).set_index("label")
         rows = []
-        for mutation in spec.mutations:
+        for index, mutation in enumerate(spec.mutations):
+            row_checkpoint = checkpoint_dir / "mutations" / f"{index:04d}.json"
+            if row_checkpoint.exists():
+                row = _load_checkpoint(row_checkpoint, identity)
+                if row.get("mutation") != mutation.label:
+                    raise ValueError("checkpoint mutation identity mismatch")
+                rows.append(row)
+                continue
             variant = VariantSpec(mutation.wt, mutation.chain, mutation.resnum, mutation.mut)
             mutant_pdb = _build_variant_pdb(base, variant, work / mutation.label)
             mutant = _score_openmm(
@@ -201,7 +284,7 @@ def run_structural_cohort(
                     raise ValueError(f"OpenMM missing restart channel {key}: {mutation.label}")
                 if len(wt[key]) != n_restarts or len(mutant[key]) != n_restarts:
                     raise ValueError(f"OpenMM incomplete restart channel {key}: {mutation.label}")
-            rows.append({
+            row = {
                 "target": target.strip(), "parent_id": parent_id.strip(), "mutation": mutation.label,
                 "ddg_bind_proxy": paired_restart_ddg(wt[_BIND_KEY], mutant[_BIND_KEY]),
                 "ddg_xint_iface": paired_restart_ddg(wt[_XINT_KEY], mutant[_XINT_KEY]),
@@ -209,7 +292,9 @@ def run_structural_cohort(
                 "n_neighbors_10a": int(geometry.loc[mutation.label, "n_neighbors_10a"]),
                 "mpnn_neg_llr_complex": mpnn[mutation.label][0],
                 "mpnn_ddg_bind": mpnn[mutation.label][1],
-            })
+            }
+            _save_checkpoint(row_checkpoint, identity, row)
+            rows.append(row)
     features = pd.DataFrame(rows)
     scores = score_features(features)
     provenance = {
@@ -222,6 +307,7 @@ def run_structural_cohort(
         "physics_channels": {"bind": _BIND_KEY, "interface": _XINT_KEY},
         "physics_protocol": kwargs, "mutation_ids": list(validation.mutation_ids),
         "historical_reproduction_status": "unverified",
+        "resume_identity_sha256": identity,
     }
     destination.mkdir(parents=True, exist_ok=True)
     features.to_csv(destination / "features.csv", index=False)
