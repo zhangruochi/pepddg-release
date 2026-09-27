@@ -8,8 +8,19 @@ PepDDG-ZS pooled Spearman rho is `0.6188807648016849` (95% interval
 common-coverage cohort has **331 mutations / 33 targets** and recorded
 PepDDG rho `0.6160850301058195`. An archived three-channel comparison has
 **340 mutations / 34 targets**. These are different cohort identities.
-The paper's 332/33 main result uses PDB crystal structures; Boltz-2 predicted
-wild-type complexes are a separate inference-time diagnostic.
+The manuscript describes the 332/33 main result as using PDB crystal
+structures and Boltz-2 predicted complexes as a separate diagnostic. However,
+the archived phase-0 producer names a predicted-score input, and all 332
+frozen-cohort raw physics pairs match the archived predicted-score table while
+none match the archived crystal-score table. The executed intermediate,
+prepared structures and per-restart records are unavailable, so the main
+result's structure provenance is **unresolved**. The frozen replay must not be
+presented as a verified crystal-input or fresh structural result.
+The source comparison is pinned to platform commit
+`999ff87db46afecd293b72cfa61c8e3ae2a21419`:
+`research/pepddg_v5/scripts/phase0_baseline.py`,
+`results/phase0/cohort_locked.csv`, and the `all_scores_predicted.csv` and
+`all_scores_crystal.csv` tables in that research project.
 
 The original 332-row released CSV has no complete molecular mutation keys or
 raw ProteinMPNN probabilities. Its row order is suitable for testing the
@@ -43,10 +54,10 @@ The B1b reconstruction uses the historical 455-row normalization population
 before selecting the 332 released observations. It reproduced all four rank
 columns exactly; the largest difference from the independent B1a ZS score
 file was `1.11e-16`. These archived tables do not contain the original
-prepared crystal structures, executed inputs or complete per-restart
-provenance, so B1b does not authenticate a fresh structural run. The original
-selected Boltz-2 coordinates for the separate predicted-input diagnostic are
-also unavailable.
+prepared structures, executed inputs or complete per-restart provenance, so
+B1b does not authenticate a fresh structural run. The structure-source
+conflict above must be resolved before assigning the frozen cohort to either
+input route.
 
 For source data, obtain the 2018 [SKEMPI 2.0 CSV and cleaned PDB archive](https://life.bsc.es/pid/skempi2/database/index)
 from its official download page and review the database's
@@ -54,8 +65,8 @@ from its official download page and review the database's
 download version, file checksums and attribution with any derived benchmark.
 These files are the broad source database, **not** the paper's exact 332/33 or
 331/33 cohort. The cleaned PDBs are not authenticated as the exact prepared
-crystal inputs used for the main result, and they are not the original Boltz-2
-predicted complexes from the separate diagnostic. A verified source-row and
+structure inputs used for the main result, and they are not the original
+Boltz-2 predicted complexes. A verified source-row and
 structure crosswalk is still being recovered; do not select rows by matching
 experimental labels. The package's noncommercial code terms and the SKEMPI
 data terms apply to their respective materials separately.
