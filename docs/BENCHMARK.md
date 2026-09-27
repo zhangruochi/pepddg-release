@@ -17,7 +17,7 @@ We therefore report four separate checks:
 | Check | Required evidence | Current status |
 |---|---|
 | B0 identity/protocol lock | Exact target–chain–residue–WT–mut keys, structures, exclusions, channel definitions and final metric manifest for all relevant cohorts | In progress; do not infer missing keys from rounded features |
-| B1a frozen regression | Installed module recomputes the 332-row score vector, pooled rho and interval without giving labels to the predictor | Run `python -m pepddg.frozen_benchmark --repo-root . --output /tmp/pepddg-frozen-replay`; this checks published features only |
+| B1a frozen regression | Installed module recomputes the 332-row score vector, pooled rho and interval without giving labels to the predictor | PASS on the installed wheel: 332/33, rho `0.6188807648016849`, interval `[0.5192060230325495, 0.7078959993425558]`, zero score/metric drift. Re-run with `python -m pepddg.frozen_benchmark --repo-root . --output /tmp/pepddg-frozen-replay` |
 | B1b historical raw-channel reconstruction | Historical raw energy/restart, geometry and MPNN terms reproduce original channel ranks | Pending authenticated raw-channel recovery |
 | B2 fresh end-to-end | Complete 332/33 and final-paper cohorts rerun from structures with all channels, seven paired restarts and exact member accounting | Not run |
 | B3 platform parity | Installed release and platform adapter exercise real orchestration and agree on keyed fresh results | Not run |
