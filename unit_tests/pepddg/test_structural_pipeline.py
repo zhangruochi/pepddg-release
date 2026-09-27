@@ -299,6 +299,31 @@ def test_target_union_rejects_incomplete_or_invalid_site_pools(tmp_path: Path) -
         assert not output.exists()
 
 
+def test_target_union_resume_rejects_corrupt_shared_wt_after_all_rows_checkpointed(tmp_path: Path, monkeypatch) -> None:
+    import pepddg.structural_pipeline as pipeline
+
+    spec = _spec(tmp_path)
+    output = tmp_path / "out"
+    monkeypatch.setattr(pipeline, "_build_variant_pdb", lambda base, variant, destination: str(base))
+    monkeypatch.setattr(pipeline, "_score_mpnn", lambda *args, **kwargs: {"G5A": (0.2, 0.4)})
+    monkeypatch.setattr(pipeline, "_score_openmm", lambda *args, **kwargs: {
+        "dg_bind_kcal_mol_restarts": [1.0, 2.0, 3.0],
+        "e_cross_interface_total_screened_kcal_mol_restarts": [2.0, 3.0, 4.0],
+    })
+    real_score_features = pipeline.score_features
+    monkeypatch.setattr(pipeline, "score_features", lambda features: (_ for _ in ()).throw(RuntimeError("publish failed")))
+    with pytest.raises(RuntimeError, match="publish failed"):
+        run_structural_cohort(spec, target="T", parent_id="WT", output_dir=output,
+                              n_restarts=3, wt_restraint_scope="target_union")
+    assert (output / ".pepddg-work" / "mutations" / "0000.json").exists()
+    (output / ".pepddg-work" / "wt.target_union.json").write_text("corrupt\n")
+    monkeypatch.setattr(pipeline, "score_features", real_score_features)
+    with pytest.raises(ValueError, match="invalid checkpoint"):
+        run_structural_cohort(spec, target="T", parent_id="WT", output_dir=output,
+                              n_restarts=3, wt_restraint_scope="target_union")
+    assert not (output / "scores.csv").exists()
+
+
 def test_final_publication_interruption_resumes_only_own_outputs(tmp_path: Path, monkeypatch) -> None:
     import pepddg.structural_pipeline as pipeline
 

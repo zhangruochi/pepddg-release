@@ -309,11 +309,22 @@ def run_structural_cohort(
         rows = []
         shared_wt = None
         shared_wt_checkpoint = checkpoint_dir / "wt.target_union.json"
-        if wt_restraint_scope == "target_union" and not shared_wt_checkpoint.exists() and any(
-            (checkpoint_dir / "mutations" / f"{index:04d}.json").exists()
-            for index in range(len(spec.mutations))
-        ):
-            raise ValueError("target-union WT checkpoint is missing for completed mutation work")
+        if wt_restraint_scope == "target_union":
+            if shared_wt_checkpoint.exists():
+                shared_wt = _load_checkpoint(shared_wt_checkpoint, identity)
+                if not isinstance(shared_wt, dict) or any(
+                    key not in shared_wt or not isinstance(shared_wt[key], list)
+                    or len(shared_wt[key]) != n_restarts
+                    for key in (_BIND_KEY, _XINT_KEY)
+                ):
+                    raise ValueError("target-union WT checkpoint has incomplete restart channels")
+                for key in (_BIND_KEY, _XINT_KEY):
+                    paired_restart_ddg(shared_wt[key], shared_wt[key])
+            elif any(
+                (checkpoint_dir / "mutations" / f"{index:04d}.json").exists()
+                for index in range(len(spec.mutations))
+            ):
+                raise ValueError("target-union WT checkpoint is missing for completed mutation work")
         for index, mutation in enumerate(spec.mutations):
             row_checkpoint = checkpoint_dir / "mutations" / f"{index:04d}.json"
             if row_checkpoint.exists():
@@ -325,14 +336,11 @@ def run_structural_cohort(
             exclusion = [f"{mutation.chain}:{mutation.resnum}"]
             if wt_restraint_scope == "target_union":
                 if shared_wt is None:
-                    if shared_wt_checkpoint.exists():
-                        shared_wt = _load_checkpoint(shared_wt_checkpoint, identity)
-                    else:
-                        shared_wt = _score_openmm(
-                            str(wt_pdb), spec.receptor_chains[0], spec.peptide_chain,
-                            **physics_kwargs, restraint_exclusion_residues=union_exclusion,
-                        )
-                        _save_checkpoint(shared_wt_checkpoint, identity, shared_wt)
+                    shared_wt = _score_openmm(
+                        str(wt_pdb), spec.receptor_chains[0], spec.peptide_chain,
+                        **physics_kwargs, restraint_exclusion_residues=union_exclusion,
+                    )
+                    _save_checkpoint(shared_wt_checkpoint, identity, shared_wt)
                 wt = shared_wt
             else:
                 wt_checkpoint = checkpoint_dir / "mutations" / f"{index:04d}.wt.json"
