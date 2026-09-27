@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 from dataclasses import replace
+import json
 import logging
 from pathlib import Path
 import sys
@@ -33,6 +34,22 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
+    if argv and argv[0] == "doctor":
+        parser = argparse.ArgumentParser(description="Check PepDDG dependencies and bundled resources without scoring.")
+        parser.add_argument("--json", action="store_true", help="Print a machine-readable report")
+        args = parser.parse_args(argv[1:])
+        from .diagnostics import diagnose_runtime
+
+        report = diagnose_runtime()
+        if args.json:
+            print(json.dumps(report, sort_keys=True))
+        else:
+            print("Feature scoring dependencies present:", report["feature_scoring_ready"])
+            print("Structural dependencies and checkpoint present:", report["structural_runtime_ready"])
+            for name, detail in report["dependencies"].items():
+                print(f"  {name}: {detail['version'] if detail['available'] else 'missing'}")
+            print("This checks presence only; it does not run a structural prediction.")
+        return 0
     if argv and argv[0] == "score-structures":
         parser = argparse.ArgumentParser(description="Score a linear receptor-peptide mutation cohort from a structure.")
         parser.add_argument("--structure", required=True, help="PDB or mmCIF complex")
