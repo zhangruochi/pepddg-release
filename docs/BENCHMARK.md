@@ -12,13 +12,13 @@ PepDDG rho `0.6160850301058195`. An archived three-channel comparison has
 The original 332-row released CSV has no complete molecular mutation keys or
 raw ProteinMPNN probabilities. Its row order is suitable for testing the
 frozen rank-fusion code; it is insufficient as a fresh structural-run input.
-We therefore report four separate checks:
+We therefore report five separate checks:
 
 | Check | Required evidence | Current status |
 |---|---|
 | B0 identity/protocol lock | Exact target–chain–residue–WT–mut keys, structures, exclusions, channel definitions and final metric manifest for all relevant cohorts | In progress; do not infer missing keys from rounded features |
 | B1a frozen regression | Installed module recomputes the 332-row score vector, pooled rho and interval without giving labels to the predictor | PASS on the installed wheel: 332/33, rho `0.6188807648016849`, interval `[0.5192060230325495, 0.7078959993425558]`, zero score/metric drift. Re-run with `python -m pepddg.frozen_benchmark --repo-root . --output /tmp/pepddg-frozen-replay` |
-| B1b historical raw-channel reconstruction | Historical raw energy/restart, geometry and MPNN terms reproduce original channel ranks | Pending authenticated raw-channel recovery |
+| B1b historical channel reconstruction | Archived physics, geometry and ProteinMPNN channel tables independently reproduce all 332 original channel ranks and the fused ZS scores | PASS within the archived-table assembly scope; original per-restart producers and structures remain unauthenticated |
 | B2 fresh end-to-end | Complete 332/33 and final-paper cohorts rerun from structures with all channels, seven paired restarts and exact member accounting | Not run |
 | B3 platform parity | Installed release and platform adapter exercise real orchestration and agree on keyed fresh results | Not run |
 
@@ -36,6 +36,24 @@ The B1a command writes `scores.csv` and `report.json`. It validates input
 hashes, the 332/33 membership, the complete ranked vector, pooled rho and
 the recorded target-bootstrap interval against tolerances fixed before this
 packaging work. The report names its scope `published_anchor_rank_regression_not_structure_to_score`.
+
+The B1b reconstruction uses the historical 455-row normalization population
+before selecting the 332 released observations. It reproduced all four rank
+columns exactly; the largest difference from the independent B1a ZS score
+file was `1.11e-16`. These archived tables do not contain the original selected
+Boltz-2 coordinate files or complete per-restart provenance, so B1b does not
+authenticate a fresh structural run.
+
+For source data, obtain the 2018 [SKEMPI 2.0 CSV and cleaned PDB archive](https://life.bsc.es/pid/skempi2/database/index)
+from its official download page and review the database's
+[CC BY 4.0 terms](https://life.bsc.es/pid/skempi2/info/terms). Keep the
+download version, file checksums and attribution with any derived benchmark.
+These files are the broad source database, **not** the paper's exact 332/33 or
+331/33 cohort and not the original Boltz-2 predicted complexes. A verified
+source-row and structure crosswalk is still being recovered; do not select
+rows by matching experimental labels or treat the public cleaned PDBs as the
+missing predicted structures. The package's noncommercial code terms and the
+SKEMPI data terms apply to their respective materials separately.
 
 The paper's seven-restart OpenMM protocol is expensive. A one-case CPU smoke
 tests only execution. The available frozen CSV can be replayed with the
