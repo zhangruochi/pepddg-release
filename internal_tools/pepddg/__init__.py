@@ -42,6 +42,9 @@ _EXPORT_MODULES = {
     # Assembly
     "assemble_features": "feature_assembly",
     "validate_scoring_input": "feature_assembly",
+    "ScoreResult": "api",
+    "score_features": "api",
+    "score_feature_csv": "api",
 }
 
 
@@ -81,4 +84,7 @@ __all__ = [
     # Assembly
     "assemble_features",
     "validate_scoring_input",
+    "ScoreResult",
+    "score_features",
+    "score_feature_csv",
 ]

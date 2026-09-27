@@ -11,6 +11,7 @@ import sys
 
 from .config import load_config
 from .pipeline import run_pepddg
+from .api import score_feature_csv
 
 
 logging.basicConfig(
@@ -29,6 +30,18 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 
 def main(argv: list[str] | None = None) -> int:
+    argv = list(sys.argv[1:] if argv is None else argv)
+    if argv and argv[0] == "score-features":
+        parser = argparse.ArgumentParser(description="Score one complete PepDDG raw-feature cohort.")
+        parser.add_argument("--input", required=True, help="Raw feature CSV")
+        parser.add_argument("--output", required=True, help="Scored CSV")
+        args = parser.parse_args(argv[1:])
+        try:
+            logger.info("PepDDG scored: %s", score_feature_csv(args.input, args.output))
+            return 0
+        except Exception:
+            logger.exception("PepDDG feature scoring failed.")
+            return 2
     args = parse_args(argv)
     try:
         cfg = load_config(args.config)
