@@ -1,0 +1,3 @@
+target,parent_id,mutation,ddg_xint_iface,ddg_bind_proxy,n_iface_contacts_8a,n_neighbors_10a,mpnn_neg_llr_complex,mpnn_ddg_bind
+example,WT,G5A,0.1,0.2,8,12,0.3,0.2
+example,WT,G5V,1.2,1.1,4,7,0.8,0.9
