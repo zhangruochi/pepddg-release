@@ -34,13 +34,18 @@ Peptide residue numbers must be consecutive, without insertion codes; a gap
 would make the structural and ProteinMPNN position maps disagree.
 
 The validated structural path currently supports **linear peptides only**.
-Head-to-tail, side-chain, linker and disulfide cyclization, covalent
-connections, modified amino acids, ligands and alternate atom locations need
-a separately validated topology workflow. Explicit or suspected closures are
-rejected where detectable; absence of a rejection is not proof that an
-unannotated chemistry is supported. For cyclic peptide optimization, use the
-feature-table interface only if all channels were produced by a separately
-validated cyclic protocol, and retain that protocol's provenance.
+This draft also has an **unqualified disulfide preview** for standard L-amino-acid
+peptides with one receptor chain and substitutions away from bonded cysteines.
+It checks the declared S–S pairs, peptide stereochemistry, force-field bonds
+and every minimized restart. A full real-channel run and independent scientific
+review are still pending; do not use preview results to rank cyclic designs yet.
+Head-to-tail, side-chain and linker cyclization, other covalent connections,
+modified amino acids, ligands and alternate atom locations remain unsupported.
+Explicit or suspected unsupported closures are rejected where detectable;
+absence of a rejection is not proof that unannotated chemistry is supported.
+For cyclic peptide optimization, use the feature-table interface only if all
+channels were produced by a separately validated cyclic protocol, and retain
+that protocol's provenance.
 
 ## Commands
 

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import numpy as np
 import pytest
 
 gemmi = pytest.importorskip("gemmi")
@@ -88,6 +89,68 @@ def test_real_1cbw_disulfide_is_not_claimed_linear() -> None:
         mutations=(MutationSpec("TI11A", "I", 11, "", "T", "A"),),
     )
     with pytest.raises(UnsupportedChemistry, match="disulfide"):
+        validate_complex(spec)
+
+
+def test_real_3otj_disulfide_closure_is_identified() -> None:
+    root = Path(__file__).resolve().parents[2]
+    structure = root / "research/pepddg_v5/data/independent_validation/scoring_input/3OTJ.pdb"
+    spec = ComplexSpec(
+        structure,
+        peptide_chain="I",
+        receptor_chains=("E",),
+        mutations=(MutationSpec("TI11A", "I", 11, "", "T", "A"),),
+        closure_kind="disulfide",
+    )
+    result = validate_complex(spec)
+    assert result.mutation_ids == ("TI11A",)
+    assert result.disulfide_pairs == ((5, 55), (14, 38), (30, 51))
+
+
+def test_disulfide_closure_rejects_mutation_of_bonded_cysteine() -> None:
+    root = Path(__file__).resolve().parents[2]
+    structure = root / "research/pepddg_v5/data/independent_validation/scoring_input/3OTJ.pdb"
+    spec = ComplexSpec(
+        structure,
+        peptide_chain="I",
+        receptor_chains=("E",),
+        mutations=(MutationSpec("CI5A", "I", 5, "", "C", "A"),),
+        closure_kind="disulfide",
+    )
+    with pytest.raises(UnsupportedChemistry, match="closure-forming cysteine"):
+        validate_complex(spec)
+
+
+def test_disulfide_closure_rejects_inverted_peptide_stereochemistry(tmp_path: Path) -> None:
+    root = Path(__file__).resolve().parents[2]
+    source = root / "research/pepddg_v5/data/independent_validation/scoring_input/3OTJ.pdb"
+    structure = gemmi.read_structure(str(source))
+    residue = next(residue for residue in structure[0]["I"] if residue.seqid.num == 11)
+    atoms = {atom.name: atom for atom in residue}
+    point = lambda atom: np.array([atom.pos.x, atom.pos.y, atom.pos.z])
+    ca = point(atoms["CA"])
+    normal = np.cross(point(atoms["N"]) - ca, point(atoms["C"]) - ca)
+    cb = point(atoms["CB"])
+    reflected = cb - 2 * np.dot(cb - ca, normal) / np.dot(normal, normal) * normal
+    atoms["CB"].pos = gemmi.Position(*reflected)
+    path = tmp_path / "inverted.pdb"
+    structure.write_pdb(str(path))
+    spec = ComplexSpec(
+        path, "I", ("E",), (MutationSpec("TI11A", "I", 11, "", "T", "A"),), "disulfide"
+    )
+    with pytest.raises(UnsupportedChemistry, match="inverted peptide stereochemistry"):
+        validate_complex(spec)
+
+
+def test_disulfide_record_must_match_coordinate_pairing(tmp_path: Path) -> None:
+    root = Path(__file__).resolve().parents[2]
+    source = root / "research/pepddg_v5/data/independent_validation/scoring_input/3OTJ.pdb"
+    path = tmp_path / "wrong-ssbond.pdb"
+    path.write_text("SSBOND   1 CYS I    5    CYS I   38\n" + source.read_text())
+    spec = ComplexSpec(
+        path, "I", ("E",), (MutationSpec("TI11A", "I", 11, "", "T", "A"),), "disulfide"
+    )
+    with pytest.raises(UnsupportedChemistry, match="disulfide record disagrees"):
         validate_complex(spec)
 
 

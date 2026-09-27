@@ -59,7 +59,7 @@ def main(argv: list[str] | None = None) -> int:
         parser.add_argument("--target", required=True)
         parser.add_argument("--parent-id", required=True)
         parser.add_argument("--output", required=True, help="New or empty output directory")
-        parser.add_argument("--closure", default="linear", help="Molecular closure; only linear is currently validated")
+        parser.add_argument("--closure", default="linear", help="Molecular closure; linear validated, disulfide preview unqualified")
         parser.add_argument("--n-restarts", type=int, default=7)
         parser.add_argument("--seed", type=int, default=20260302)
         parser.add_argument("--platform", choices=("CPU", "CUDA"), default="CPU")

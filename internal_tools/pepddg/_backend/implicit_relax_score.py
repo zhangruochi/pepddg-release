@@ -589,6 +589,7 @@ def compute_binding_energy_implicit(
     force_field: str = "amber14-all.xml",
     solute_dielectric: float = 1.0,
     linker: Optional[str] = None,
+    expected_disulfide_pairs: Optional[Sequence[Tuple[int, int]]] = None,
 ) -> Dict[str, Any]:
     """
     Fast implicit-solvent binding energy proxy:
@@ -826,6 +827,14 @@ def compute_binding_energy_implicit(
             nonbondedMethod=app.NoCutoff,
             constraints=app.HBonds,
         )
+        if expected_disulfide_pairs:
+            from ..cyclic_integrity import verify_disulfide_integrity
+
+            verify_disulfide_integrity(
+                modeller.topology, modeller.positions, peptide_chain=ligand_chain,
+                expected_pairs=tuple(tuple(pair) for pair in expected_disulfide_pairs),
+                system=system, stage="parameterized complex",
+            )
 
         # R2-T04 (defect 4): if head_to_tail closure was present, restore the
         # N1→CN amide as a HarmonicBondForce term (template-matching free).
@@ -1172,6 +1181,14 @@ def compute_binding_energy_implicit(
                 if (not math.isfinite(e_complex_kcal_mol)) or abs(e_complex_kcal_mol) > 5e4:
                     raise ValueError(f"Unstable complex energy after minimization: {e_complex_kcal_mol:.3g} kcal/mol")
 
+            disulfide_integrity = None
+            if expected_disulfide_pairs:
+                disulfide_integrity = verify_disulfide_integrity(
+                    modeller.topology, minimized_positions, peptide_chain=ligand_chain,
+                    expected_pairs=tuple(tuple(pair) for pair in expected_disulfide_pairs),
+                    system=system, stage=f"minimized restart {restart_idx}",
+                )
+
             minimized_raw = restart_dir / "complex_minimized.raw.pdb"
             with open(minimized_raw, "w") as f:
                 app.PDBFile.writeFile(modeller.topology, minimized_positions, f, keepIds=True)
@@ -1243,6 +1260,7 @@ def compute_binding_energy_implicit(
                 "e_tbmb_restraint_kcal_mol": e_tbmb_restraint_kj * KJ_MOL_TO_KCAL_MOL,
                 "_minimized_positions_nm": minimized_positions_nm,
                 "minimized_complex_pdb": str(minimized_complex),
+                "disulfide_integrity": disulfide_integrity,
                 "receptor_pdb": str(receptor_pdb),
                 "ligand_pdb": str(ligand_pdb),
             }
@@ -1764,6 +1782,9 @@ def compute_binding_energy_implicit(
             "dg_bind_kcal_mol_restarts": [float(x) for x in dg_values.tolist()],
             "selected_restart_index": int(selected_restart_idx),
             "restart_errors": restart_errors,
+            "disulfide_integrity_restarts": [
+                record["disulfide_integrity"] for record in restart_records
+            ] if expected_disulfide_pairs else [],
             **cross_terms,
             **cross_terms_restarts,
         }

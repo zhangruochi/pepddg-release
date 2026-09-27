@@ -71,6 +71,9 @@ single-receptor-chain input contract and currently unsupported chemistries are
 documented in [structural workflow](docs/STRUCTURES.md). Successful runs write
 `features.csv`, `scores.csv` and `provenance.json` only after every requested
 mutation has all required channels.
+An experimental disulfide-closure path exists on this draft branch but has not
+yet passed a complete physical run or independent scientific review; it is not
+a validated cyclic-peptide ranking method.
 
 Python users can call `pepddg.score_features(frame)` or
 `pepddg.run_structural_cohort(spec, target=..., parent_id=...,

@@ -79,6 +79,26 @@ def test_cyclic_input_fails_before_any_output(tmp_path: Path) -> None:
     assert not (tmp_path / "out").exists()
 
 
+def test_disulfide_cohort_requires_real_physics_integrity_records(tmp_path: Path, monkeypatch) -> None:
+    import pepddg.structural_pipeline as pipeline
+
+    root = Path(__file__).resolve().parents[2]
+    source = root / "research/pepddg_v5/data/independent_validation/scoring_input/3OTJ.pdb"
+    spec = ComplexSpec(
+        source, "I", ("E",), (MutationSpec("TI11A", "I", 11, "", "T", "A"),), "disulfide"
+    )
+    monkeypatch.setattr(pipeline, "_build_variant_pdb", lambda base, variant, output: str(base))
+    monkeypatch.setattr(pipeline, "_score_mpnn", lambda *a, **k: {"TI11A": (0.2, 0.4)})
+    monkeypatch.setattr(pipeline, "_score_openmm", lambda *a, **k: {
+        "dg_bind_kcal_mol_restarts": [0.0, 1.0, 2.0],
+        "e_cross_interface_total_screened_kcal_mol_restarts": [1.0, 2.0, 3.0],
+    })
+    destination = tmp_path / "out"
+    with pytest.raises(ValueError, match="disulfide integrity"):
+        run_structural_cohort(spec, target="3OTJ", parent_id="WT", output_dir=destination, n_restarts=3)
+    assert not (destination / "scores.csv").exists()
+
+
 def test_structure_cli_rejects_unsupported_chemistry_without_output(tmp_path: Path) -> None:
     spec = _spec(tmp_path)
     mutations = tmp_path / "mutations.csv"

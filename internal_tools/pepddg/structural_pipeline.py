@@ -1,4 +1,4 @@
-"""Generate all three PepDDG channels from a validated linear complex."""
+"""Generate all three PepDDG channels from validated supported complexes."""
 
 from __future__ import annotations
 
@@ -79,6 +79,22 @@ def paired_restart_ddg(wild_type: Sequence[float], mutant: Sequence[float]) -> f
     if len(pairs) < 3:
         raise ValueError("at least three common finite restart pairs are required")
     return float(np.median(pairs))
+
+
+def _require_disulfide_integrity(
+    result: dict[str, Any], expected_pairs: tuple[tuple[int, int], ...], n_restarts: int,
+) -> list[dict[str, float]]:
+    records = result.get("disulfide_integrity_restarts")
+    names = {f"{first}-{second}" for first, second in expected_pairs}
+    if not isinstance(records, list) or len(records) != n_restarts:
+        raise ValueError("disulfide integrity record missing or incomplete")
+    for record in records:
+        if not isinstance(record, dict) or set(record) != names or any(
+            not isinstance(value, (int, float)) or not math.isfinite(float(value))
+            or not 1.7 <= float(value) <= 2.5 for value in record.values()
+        ):
+            raise ValueError("disulfide integrity record is invalid")
+    return records
 
 
 def _selected_pdb(spec: ComplexSpec, destination: Path) -> Path:
@@ -178,7 +194,7 @@ def run_structural_cohort(
     platform: str = "CPU",
     cpu_threads: int = 2,
 ) -> StructuralResult:
-    """Score a complete one-parent linear substitution cohort from coordinates.
+    """Score a complete one-parent supported substitution cohort from coordinates.
 
     Each WT/mutant energy uses the historical two-stage OBC2 protocol. Outputs
     publish only after all features and cohort scores pass validation.
@@ -209,11 +225,14 @@ def run_structural_cohort(
         coulomb_screening_distance_nm=0.10, coulomb_screening_dielectric=80.0,
         restraint_exclusion_distance_a=10.0, random_seed=seed,
     )
+    if spec.closure_kind == "disulfide":
+        kwargs["expected_disulfide_pairs"] = validation.disulfide_pairs
     source_files = [
         Path(__file__), Path(__file__).parent / "api.py",
         Path(__file__).parent / "config.py",
         Path(__file__).parent / "scoring.py",
         Path(__file__).parent / "structure_contract.py",
+        Path(__file__).parent / "cyclic_integrity.py",
         Path(__file__).parent / "structure_io.py",
         Path(__file__).parent / "structural_features.py",
         Path(__file__).parent / "mpnn_features.py",
@@ -297,6 +316,9 @@ def run_structural_cohort(
                 mutant_pdb, spec.receptor_chains[0], spec.peptide_chain,
                 **kwargs, restraint_exclusion_residues=exclusion,
             )
+            if spec.closure_kind == "disulfide":
+                wt_integrity = _require_disulfide_integrity(wt, validation.disulfide_pairs, n_restarts)
+                mutant_integrity = _require_disulfide_integrity(mutant, validation.disulfide_pairs, n_restarts)
             for key in (_BIND_KEY, _XINT_KEY):
                 if key not in wt or key not in mutant:
                     raise ValueError(f"OpenMM missing restart channel {key}: {mutation.label}")
@@ -311,12 +333,14 @@ def run_structural_cohort(
                 "mpnn_neg_llr_complex": mpnn[mutation.label][0],
                 "mpnn_ddg_bind": mpnn[mutation.label][1],
             }
+            if spec.closure_kind == "disulfide":
+                row["disulfide_integrity"] = {"wt": wt_integrity, "mutant": mutant_integrity}
             _save_checkpoint(row_checkpoint, identity, row)
             rows.append(row)
     features = pd.DataFrame(rows, columns=list(IDENTITY_COLUMNS + FEATURE_COLUMNS))
     scores = score_features(features)
     provenance = {
-        "status": "ok", "scope": "linear_single_receptor_cohort",
+        "status": "ok", "scope": f"{spec.closure_kind}_single_receptor_cohort",
         "structure_sha256": validation.structure_sha256,
         "excluded_water_atoms": validation.excluded_water_atoms,
         "checkpoint_sha256": sha256(weights.read_bytes()).hexdigest(),
@@ -324,6 +348,10 @@ def run_structural_cohort(
         "mpnn_rng": "torch manual seed before complex; isolated chain consumes continued stream",
         "physics_channels": {"bind": _BIND_KEY, "interface": _XINT_KEY},
         "physics_protocol": kwargs, "mutation_ids": list(validation.mutation_ids),
+        "disulfide_pairs": [list(pair) for pair in validation.disulfide_pairs],
+        "disulfide_integrity": {
+            row["mutation"]: row["disulfide_integrity"] for row in rows
+        } if spec.closure_kind == "disulfide" else {},
         "historical_reproduction_status": "unverified",
         "resume_identity_sha256": identity,
     }
