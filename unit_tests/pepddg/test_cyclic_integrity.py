@@ -9,7 +9,7 @@ import pytest
 pytest.importorskip("openmm")
 pytest.importorskip("pdbfixer")
 
-from openmm import System
+from openmm import HarmonicBondForce, System
 from openmm.app import ForceField, HBonds, NoCutoff, PDBFile
 
 from pepddg._backend.variant_builder import VariantSpec, build_variant_pdb
@@ -61,4 +61,47 @@ def test_disulfide_integrity_rejects_unparameterized_bonds(prepared_3otj) -> Non
         verify_disulfide_integrity(
             model.topology, model.positions, peptide_chain="I", expected_pairs=expected,
             system=system, stage="unparameterized",
+        )
+
+
+def test_disulfide_integrity_rejects_extra_receptor_peptide_bond(prepared_3otj) -> None:
+    from pepddg.cyclic_integrity import verify_disulfide_integrity
+
+    expected, paths = prepared_3otj
+    model = PDBFile(str(paths[0]))
+    sulfurs = {
+        (atom.residue.chain.id, int(atom.residue.id)): atom
+        for atom in model.topology.atoms() if atom.name == "SG"
+    }
+    model.topology.addBond(sulfurs[("E", 58)], sulfurs[("I", 14)])
+    with pytest.raises(ValueError, match="disulfide topology mismatch"):
+        verify_disulfide_integrity(
+            model.topology, model.positions, peptide_chain="I", expected_pairs=expected,
+            stage="cross-chain-bond",
+        )
+
+
+def test_disulfide_integrity_rejects_zero_force_constant(prepared_3otj) -> None:
+    from pepddg.cyclic_integrity import verify_disulfide_integrity
+
+    expected, paths = prepared_3otj
+    model = PDBFile(str(paths[0]))
+    system = ForceField("amber14-all.xml", "implicit/obc2.xml").createSystem(
+        model.topology, nonbondedMethod=NoCutoff, constraints=HBonds
+    )
+    sulfurs = {
+        (atom.residue.chain.id, int(atom.residue.id)): atom.index
+        for atom in model.topology.atoms() if atom.name == "SG"
+    }
+    pair = {sulfurs[("I", 5)], sulfurs[("I", 55)]}
+    for force in system.getForces():
+        if isinstance(force, HarmonicBondForce):
+            for index in range(force.getNumBonds()):
+                first, second, length, stiffness = force.getBondParameters(index)
+                if {int(first), int(second)} == pair:
+                    force.setBondParameters(index, first, second, length, 0 * stiffness)
+    with pytest.raises(ValueError, match="force-field disulfide bond"):
+        verify_disulfide_integrity(
+            model.topology, model.positions, peptide_chain="I", expected_pairs=expected,
+            system=system, stage="zero-stiffness",
         )

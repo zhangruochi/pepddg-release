@@ -43,14 +43,24 @@ def verify_disulfide_integrity(
             raise ValueError(f"{stage}: disulfide cysteine {number} has missing SG or thiol HG")
         sg_atoms[number] = by_name["SG"]
 
-    topology_pairs = {
-        tuple(sorted((int(first.residue.id), int(second.residue.id))))
-        for first, second in topology.bonds()
-        if first.name == second.name == "SG"
-        and first.residue.chain.id == second.residue.chain.id == peptide_chain
+    expected_indices = {
+        tuple(sorted((sg_atoms[first].index, sg_atoms[second].index)))
+        for first, second in expected
     }
-    if topology_pairs != expected:
-        raise ValueError(f"{stage}: disulfide topology mismatch: {sorted(topology_pairs)}")
+    topology_indices = set()
+    for first, second in topology.bonds():
+        if (first.name == "SG" and first.residue.chain.id == peptide_chain
+                and second.residue.chain.id != peptide_chain) or (
+            second.name == "SG" and second.residue.chain.id == peptide_chain
+            and first.residue.chain.id != peptide_chain
+        ):
+            raise ValueError(f"{stage}: disulfide topology mismatch: cross-chain peptide sulfur bond")
+        if first.name == second.name == "SG" and (
+            first.residue.chain.id == peptide_chain or second.residue.chain.id == peptide_chain
+        ):
+            topology_indices.add(tuple(sorted((first.index, second.index))))
+    if topology_indices != expected_indices:
+        raise ValueError(f"{stage}: disulfide topology mismatch")
 
     coordinates = np.asarray(positions.value_in_unit(unit.angstrom), dtype=float)
     if coordinates.shape != (len(atoms), 3) or not np.isfinite(coordinates).all():
@@ -82,14 +92,30 @@ def verify_disulfide_integrity(
     if system is not None:
         if system.getNumParticles() != len(atoms):
             raise ValueError(f"{stage}: OpenMM system/structure atom count mismatch")
-        bonded_indices = {
-            tuple(sorted((int(force.getBondParameters(index)[0]),
-                          int(force.getBondParameters(index)[1]))))
-            for force in system.getForces() if isinstance(force, HarmonicBondForce)
-            for index in range(force.getNumBonds())
+        sulfur_indices = {atom.index for atom in atoms if atom.name == "SG"}
+        peptide_sulfur_indices = {
+            atom.index for atom in atoms
+            if atom.name == "SG" and atom.residue.chain.id == peptide_chain
         }
-        for first, second in expected:
-            indices = tuple(sorted((sg_atoms[first].index, sg_atoms[second].index)))
-            if indices not in bonded_indices:
-                raise ValueError(f"{stage}: force-field disulfide bond missing: {first}-{second}")
+        bonded_indices = set()
+        for force in system.getForces():
+            if not isinstance(force, HarmonicBondForce):
+                continue
+            for index in range(force.getNumBonds()):
+                first, second, length, stiffness = force.getBondParameters(index)
+                indices = tuple(sorted((int(first), int(second))))
+                if not (set(indices) <= sulfur_indices and set(indices) & peptide_sulfur_indices):
+                    continue
+                if indices not in expected_indices or indices in bonded_indices:
+                    raise ValueError(f"{stage}: force-field disulfide bond mismatch")
+                bond_length = float(length.value_in_unit(unit.nanometer))
+                bond_stiffness = float(stiffness.value_in_unit(
+                    unit.kilojoule_per_mole / unit.nanometer**2
+                ))
+                if (not math.isfinite(bond_length) or not 0.17 <= bond_length <= 0.25
+                        or not math.isfinite(bond_stiffness) or bond_stiffness <= 0):
+                    raise ValueError(f"{stage}: force-field disulfide bond parameters invalid")
+                bonded_indices.add(indices)
+        if bonded_indices != expected_indices:
+            raise ValueError(f"{stage}: force-field disulfide bond missing")
     return distances

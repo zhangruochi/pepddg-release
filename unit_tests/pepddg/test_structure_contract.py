@@ -154,6 +154,24 @@ def test_disulfide_record_must_match_coordinate_pairing(tmp_path: Path) -> None:
         validate_complex(spec)
 
 
+def test_disulfide_closure_rejects_cross_chain_sulfur_contact(tmp_path: Path) -> None:
+    root = Path(__file__).resolve().parents[2]
+    source = root / "research/pepddg_v5/data/independent_validation/scoring_input/3OTJ.pdb"
+    structure = gemmi.read_structure(str(source))
+    peptide = next(residue for residue in structure[0]["I"] if residue.seqid.num == 14)
+    receptor = next(residue for residue in structure[0]["E"] if residue.seqid.num == 58)
+    peptide_sg = next(atom for atom in peptide if atom.name == "SG")
+    receptor_sg = next(atom for atom in receptor if atom.name == "SG")
+    receptor_sg.pos = gemmi.Position(peptide_sg.pos.x + 2.0, peptide_sg.pos.y, peptide_sg.pos.z)
+    path = tmp_path / "cross-chain-sulfur.pdb"
+    structure.write_pdb(str(path))
+    spec = ComplexSpec(
+        path, "I", ("E",), (MutationSpec("TI11A", "I", 11, "", "T", "A"),), "disulfide"
+    )
+    with pytest.raises(UnsupportedChemistry, match="cross-chain sulfur contact"):
+        validate_complex(spec)
+
+
 def test_fractional_residue_number_is_rejected(tmp_path: Path) -> None:
     source = tmp_path / "mutations.csv"
     source.write_text("mutation,chain,resnum,icode,wt,mut\nG5A,B,5.5,,G,A\n")

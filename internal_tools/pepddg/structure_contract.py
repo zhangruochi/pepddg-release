@@ -185,6 +185,22 @@ def validate_complex(spec: ComplexSpec) -> ComplexValidation:
         for residue in peptide_residues if residue.name == "CYS"
         for atom in residue if atom.name == "SG"
     ]
+    receptor_sulfurs = [
+        atom
+        for chain_name in spec.receptor_chains
+        for residue in chains[chain_name] if residue.name == "CYS"
+        for atom in residue if atom.name == "SG"
+    ]
+    for _, peptide_sulfur in sulfurs:
+        peptide_position = np.array([
+            peptide_sulfur.pos.x, peptide_sulfur.pos.y, peptide_sulfur.pos.z
+        ])
+        for receptor_sulfur in receptor_sulfurs:
+            receptor_position = np.array([
+                receptor_sulfur.pos.x, receptor_sulfur.pos.y, receptor_sulfur.pos.z
+            ])
+            if np.linalg.norm(peptide_position - receptor_position) < 2.5:
+                raise UnsupportedChemistry("cross-chain sulfur contact is unsupported")
     disulfide_pairs: list[tuple[int, int]] = []
     bonded_cysteines: set[int] = set()
     for index, (first_number, first) in enumerate(sulfurs):
