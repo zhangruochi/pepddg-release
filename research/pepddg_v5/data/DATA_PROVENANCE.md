@@ -85,7 +85,7 @@ copy of the corresponding PDB structure listed in §1.3. License: same as PDB
 
 | File | Content | License |
 |------|---------|---------|
-| `paper_numbers_v19.json` | Frozen paper numbers (rho, CIs, bootstrap stats) | This work — released under the repo's MIT license |
+| `paper_numbers_v19.json` | Frozen paper numbers (rho, CIs, bootstrap stats) | Original snapshot — MIT (see `LICENSE-MIT`) |
 | `paper_numbers_zs_cal.json` | ZS+Cal release numbers | This work — MIT |
 | `recovery_manifest_v19.json` | SHA256 manifest for reproducibility audit | This work — MIT |
 | `release_manifest_zs_cal.json` | Same, for ZS+Cal release | This work — MIT |
@@ -98,9 +98,12 @@ copy of the corresponding PDB structure listed in §1.3. License: same as PDB
 
 ## 3. Algorithm code
 
-All code under `internal_tools/pepddg/`, `research/pepddg_v5/scripts/`, and
-`unit_tests/pepddg/` is original work released under the **MIT License** (see
-top-level `LICENSE`).
+The original snapshot at commit `4fae29b7bb9f5cf7befcb50b8badc392a848864c`
+was released under MIT; its original code retains that grant (see
+`LICENSE-MIT`). New packaging, structural orchestration and tests in later
+commits are under PolyForm Noncommercial 1.0.0 (see top-level `LICENSE` and
+`LICENSE_SCOPE.md`). Directory names alone do not determine the terms of a
+particular file or contribution.
 
 ---
 
