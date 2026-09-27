@@ -170,6 +170,12 @@ def validate_complex(spec: ComplexSpec) -> ComplexValidation:
         if distance < 1.9:
             raise UnsupportedChemistry("possible head-to-tail peptide closure detected")
 
+    if any(_icode(residue.seqid.icode) for residue in peptide_residues):
+        raise UnsupportedChemistry("peptide insertion codes are unsupported by ProteinMPNN indexing")
+    if any(second.seqid.num != first.seqid.num + 1
+           for first, second in zip(peptide_residues, peptide_residues[1:])):
+        raise UnsupportedChemistry("peptide numbering gap is unsupported by ProteinMPNN indexing")
+
     labels: set[str] = set()
     identities: set[tuple[str, int, str, str]] = set()
     for mutation in spec.mutations:

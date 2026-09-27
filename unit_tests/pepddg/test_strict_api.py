@@ -35,6 +35,15 @@ def test_scores_complete_raw_feature_cohort_without_changing_row_identity() -> N
     assert result.summary["lower_is_better"] is True
 
 
+def test_rejects_extra_physics_columns_that_shadow_required_raw_features() -> None:
+    frame = _features().assign(
+        ddg_paired_xint_iface=[2.0, 0.0],
+        ddg_paired_bind_proxy=[2.0, 0.0],
+    )
+    with pytest.raises(ValueError, match="unexpected feature columns"):
+        score_features(frame)
+
+
 @pytest.mark.parametrize(
     "change,match",
     [

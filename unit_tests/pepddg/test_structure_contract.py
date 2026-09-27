@@ -54,6 +54,16 @@ def test_wrong_wild_type_is_rejected(tmp_path: Path) -> None:
         validate_complex(_spec(_pdb(tmp_path / "complex.pdb"), wt="A", mut="V"))
 
 
+def test_peptide_numbering_gap_is_rejected_before_mpnn_indexing(tmp_path: Path) -> None:
+    pdb = _pdb(tmp_path / "complex.pdb")
+    lines = [_atom(20 + index, name, "ALA", "B", 7, 16.0 + delta)
+             for index, (name, delta) in enumerate((("N", 0.0), ("CA", 1.0), ("C", 2.0), ("O", 3.0)))]
+    pdb.write_text(pdb.read_text().replace("END\n", "".join(lines) + "END\n"))
+    spec = _spec(pdb, label="A7V", resnum=7, wt="A", mut="V")
+    with pytest.raises(UnsupportedChemistry, match="numbering gap"):
+        validate_complex(spec)
+
+
 def test_cyclic_topology_is_not_silently_treated_as_linear(tmp_path: Path) -> None:
     spec = _spec(_pdb(tmp_path / "complex.pdb"))
     spec = ComplexSpec(spec.structure_path, spec.peptide_chain, spec.receptor_chains, spec.mutations, closure_kind="head_to_tail")

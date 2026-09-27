@@ -53,6 +53,9 @@ def _validate_features(frame: pd.DataFrame) -> pd.DataFrame:
         raise ValueError("precomputed rankscore columns are not accepted by this raw-feature interface")
     if any(token in str(col).lower() for col in frame for token in ("foldx", "rosetta", "cartddg")):
         raise ValueError("baseline prediction columns are not accepted by this interface")
+    unexpected = [str(col) for col in frame if col not in IDENTITY_COLUMNS + FEATURE_COLUMNS]
+    if unexpected:
+        raise ValueError("unexpected feature columns: " + ", ".join(unexpected))
 
     out = frame.copy()
     for name in IDENTITY_COLUMNS:
