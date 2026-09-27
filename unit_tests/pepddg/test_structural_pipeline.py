@@ -69,6 +69,13 @@ def test_structural_cohort_uses_raw_channels_and_records_provenance(tmp_path: Pa
     assert result.provenance["n_restarts"] == 3
     assert (tmp_path / "out" / "features.csv").exists()
     assert (tmp_path / "out" / "scores.csv").exists()
+    # Full paired restart arrays must survive publication for independent QC.
+    import json
+
+    mutant_checkpoint = tmp_path / "out" / ".pepddg-work" / "mutations" / "0000.mutant.json"
+    mutant_record = json.loads(mutant_checkpoint.read_text())
+    assert mutant_record["payload"]["dg_bind_kcal_mol_restarts"] == [2.0, 3.0, 4.0]
+    assert mutant_record["payload"]["e_cross_interface_total_screened_kcal_mol_restarts"] == [3.0, 4.0, 5.0]
 
 
 def test_cyclic_input_fails_before_any_output(tmp_path: Path) -> None:

@@ -312,10 +312,15 @@ def run_structural_cohort(
                 _save_checkpoint(wt_checkpoint, identity, wt)
             variant = VariantSpec(mutation.wt, mutation.chain, mutation.resnum, mutation.mut)
             mutant_pdb = _build_variant_pdb(base, variant, work / mutation.label)
-            mutant = _score_openmm(
-                mutant_pdb, spec.receptor_chains[0], spec.peptide_chain,
-                **kwargs, restraint_exclusion_residues=exclusion,
-            )
+            mutant_checkpoint = checkpoint_dir / "mutations" / f"{index:04d}.mutant.json"
+            if mutant_checkpoint.exists():
+                mutant = _load_checkpoint(mutant_checkpoint, identity)
+            else:
+                mutant = _score_openmm(
+                    mutant_pdb, spec.receptor_chains[0], spec.peptide_chain,
+                    **kwargs, restraint_exclusion_residues=exclusion,
+                )
+                _save_checkpoint(mutant_checkpoint, identity, mutant)
             if spec.closure_kind == "disulfide":
                 wt_integrity = _require_disulfide_integrity(wt, validation.disulfide_pairs, n_restarts)
                 mutant_integrity = _require_disulfide_integrity(mutant, validation.disulfide_pairs, n_restarts)
