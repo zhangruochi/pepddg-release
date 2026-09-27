@@ -13,8 +13,8 @@ repository; see [citation guidance](#citation).
 
 ## Install
 
-From a clone of this repository, create the complete CPU-capable environment
-with one command:
+On Linux x86-64, from a clone of this repository, create the complete
+CPU-capable environment with one command (plus the required activation):
 
 ```bash
 conda env create -f environment.yaml
@@ -23,7 +23,8 @@ pepddg --help
 pepddg doctor --json
 ```
 
-`environment.yaml` installs OpenMM and PDBFixer from conda-forge, PyTorch,
+`environment.yaml` pins the tested Python and scientific stack and selects a
+CPU build of PyTorch. It installs OpenMM and PDBFixer from conda-forge,
 ProteinMPNN's bundled v_48_020 checkpoint and this package. The structural
 workflow defaults to CPU; CUDA needs a compatible OpenMM/CUDA installation and
 your own compute resources. The lightweight feature-only path can instead be
