@@ -45,6 +45,12 @@ _EXPORT_MODULES = {
     "ScoreResult": "api",
     "score_features": "api",
     "score_feature_csv": "api",
+    "MutationSpec": "structure_contract",
+    "ComplexSpec": "structure_contract",
+    "ComplexValidation": "structure_contract",
+    "UnsupportedChemistry": "structure_contract",
+    "read_mutations_csv": "structure_contract",
+    "validate_complex": "structure_contract",
 }
 
 
@@ -87,4 +93,10 @@ __all__ = [
     "ScoreResult",
     "score_features",
     "score_feature_csv",
+    "MutationSpec",
+    "ComplexSpec",
+    "ComplexValidation",
+    "UnsupportedChemistry",
+    "read_mutations_csv",
+    "validate_complex",
 ]
