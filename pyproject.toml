@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pepddg"
+version = "0.1.0"
+description = "PepDDG peptide-protein mutation ranking research tool"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+  "numpy>=1.26",
+  "pandas>=2.1",
+  "scipy>=1.11",
+  "PyYAML>=6.0",
+]
+classifiers = [
+  "Programming Language :: Python :: 3.12",
+  "Operating System :: POSIX :: Linux",
+  "Intended Audience :: Science/Research",
+  "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+
+[project.optional-dependencies]
+structure = ["gemmi>=0.6"]
+test = ["pytest>=7.4", "build>=1.0"]
+
+[project.scripts]
+pepddg = "pepddg.run_pepddg:main"
+
+[tool.setuptools]
+packages = ["pepddg"]
+
+[tool.setuptools.package-dir]
+pepddg = "internal_tools/pepddg"
+
+[tool.setuptools.package-data]
+pepddg = ["configs/*.yaml", "minimal_example/*.yaml", "minimal_example/*.csv"]

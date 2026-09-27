@@ -16,32 +16,32 @@ from typing import Any
 
 _EXPORT_MODULES = {
     # Config + pipeline
-    "PepDDGConfig": "internal_tools.pepddg.config",
-    "V19SanitizedWeights": "internal_tools.pepddg.config",
-    "load_config": "internal_tools.pepddg.config",
-    "run_pepddg": "internal_tools.pepddg.pipeline",
+    "PepDDGConfig": "config",
+    "V19SanitizedWeights": "config",
+    "load_config": "config",
+    "run_pepddg": "pipeline",
     # Structure I/O
-    "AtomRecord": "internal_tools.pepddg.structure_io",
-    "parse_structure": "internal_tools.pepddg.structure_io",
-    "get_residue_coord": "internal_tools.pepddg.structure_io",
-    "get_chain_sequence": "internal_tools.pepddg.structure_io",
+    "AtomRecord": "structure_io",
+    "parse_structure": "structure_io",
+    "get_residue_coord": "structure_io",
+    "get_chain_sequence": "structure_io",
     # Structural features
-    "MutationSite": "internal_tools.pepddg.structural_features",
-    "compute_interface_contacts": "internal_tools.pepddg.structural_features",
-    "compute_neighbor_count": "internal_tools.pepddg.structural_features",
-    "compute_structural_features_batch": "internal_tools.pepddg.structural_features",
-    "compute_struct_composite": "internal_tools.pepddg.structural_features",
+    "MutationSite": "structural_features",
+    "compute_interface_contacts": "structural_features",
+    "compute_neighbor_count": "structural_features",
+    "compute_structural_features_batch": "structural_features",
+    "compute_struct_composite": "structural_features",
     # Physics features
-    "extract_physics_from_openmm_results": "internal_tools.pepddg.physics_features",
-    "extract_physics_from_csv": "internal_tools.pepddg.physics_features",
-    "compute_physics_rankscore": "internal_tools.pepddg.physics_features",
+    "extract_physics_from_openmm_results": "physics_features",
+    "extract_physics_from_csv": "physics_features",
+    "compute_physics_rankscore": "physics_features",
     # MPNN features
-    "compute_mpnn_ddg_features": "internal_tools.pepddg.mpnn_features",
-    "extract_mpnn_from_csv": "internal_tools.pepddg.mpnn_features",
-    "compute_mpnn_rankscore": "internal_tools.pepddg.mpnn_features",
+    "compute_mpnn_ddg_features": "mpnn_features",
+    "extract_mpnn_from_csv": "mpnn_features",
+    "compute_mpnn_rankscore": "mpnn_features",
     # Assembly
-    "assemble_features": "internal_tools.pepddg.feature_assembly",
-    "validate_scoring_input": "internal_tools.pepddg.feature_assembly",
+    "assemble_features": "feature_assembly",
+    "validate_scoring_input": "feature_assembly",
 }
 
 
@@ -49,7 +49,7 @@ def __getattr__(name: str) -> Any:
     module_name = _EXPORT_MODULES.get(name)
     if module_name is None:
         raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
-    value = getattr(import_module(module_name), name)
+    value = getattr(import_module(f".{module_name}", __name__), name)
     globals()[name] = value
     return value
 
