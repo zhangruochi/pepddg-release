@@ -8,6 +8,8 @@ PepDDG-ZS pooled Spearman rho is `0.6188807648016849` (95% interval
 common-coverage cohort has **331 mutations / 33 targets** and recorded
 PepDDG rho `0.6160850301058195`. An archived three-channel comparison has
 **340 mutations / 34 targets**. These are different cohort identities.
+The paper's 332/33 main result uses PDB crystal structures; Boltz-2 predicted
+wild-type complexes are a separate inference-time diagnostic.
 
 The original 332-row released CSV has no complete molecular mutation keys or
 raw ProteinMPNN probabilities. Its row order is suitable for testing the
@@ -40,20 +42,23 @@ packaging work. The report names its scope `published_anchor_rank_regression_not
 The B1b reconstruction uses the historical 455-row normalization population
 before selecting the 332 released observations. It reproduced all four rank
 columns exactly; the largest difference from the independent B1a ZS score
-file was `1.11e-16`. These archived tables do not contain the original selected
-Boltz-2 coordinate files or complete per-restart provenance, so B1b does not
-authenticate a fresh structural run.
+file was `1.11e-16`. These archived tables do not contain the original
+prepared crystal structures, executed inputs or complete per-restart
+provenance, so B1b does not authenticate a fresh structural run. The original
+selected Boltz-2 coordinates for the separate predicted-input diagnostic are
+also unavailable.
 
 For source data, obtain the 2018 [SKEMPI 2.0 CSV and cleaned PDB archive](https://life.bsc.es/pid/skempi2/database/index)
 from its official download page and review the database's
 [CC BY 4.0 terms](https://life.bsc.es/pid/skempi2/info/terms). Keep the
 download version, file checksums and attribution with any derived benchmark.
 These files are the broad source database, **not** the paper's exact 332/33 or
-331/33 cohort and not the original Boltz-2 predicted complexes. A verified
-source-row and structure crosswalk is still being recovered; do not select
-rows by matching experimental labels or treat the public cleaned PDBs as the
-missing predicted structures. The package's noncommercial code terms and the
-SKEMPI data terms apply to their respective materials separately.
+331/33 cohort. The cleaned PDBs are not authenticated as the exact prepared
+crystal inputs used for the main result, and they are not the original Boltz-2
+predicted complexes from the separate diagnostic. A verified source-row and
+structure crosswalk is still being recovered; do not select rows by matching
+experimental labels. The package's noncommercial code terms and the SKEMPI
+data terms apply to their respective materials separately.
 
 The paper's seven-restart OpenMM protocol is expensive. A one-case CPU smoke
 tests only execution. The available frozen CSV can be replayed with the
