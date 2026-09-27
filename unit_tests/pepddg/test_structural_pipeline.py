@@ -137,7 +137,7 @@ def test_interrupted_cohort_resumes_completed_mutations(tmp_path: Path, monkeypa
 
     result = run_structural_cohort(spec, target="T", parent_id="WT", output_dir=output, n_restarts=3)
     assert result.features["mutation"].tolist() == ["G5A", "G5V"]
-    assert len(calls) == 4
+    assert len(calls) == 5
     assert (output / "scores.csv").exists()
 
 
@@ -157,3 +157,85 @@ def test_changed_input_refuses_saved_partial_work(tmp_path: Path, monkeypatch) -
         run_structural_cohort(spec, target="T", parent_id="WT", output_dir=output, n_restarts=3)
     with pytest.raises(ValueError, match="checkpoint identity"):
         run_structural_cohort(spec, target="T", parent_id="WT", output_dir=output, n_restarts=4)
+
+
+def test_each_mutant_uses_its_own_paired_wt_protocol(tmp_path: Path, monkeypatch) -> None:
+    import pepddg.structural_pipeline as pipeline
+
+    first = _spec(tmp_path)
+    pdb = first.structure_path
+    addition = "".join(_atom(20 + index, name, "ALA", "B", 6, 12.0 + delta)
+                       for index, (name, delta) in enumerate((("N", 0.0), ("CA", 1.0), ("C", 2.0), ("O", 3.0))))
+    pdb.write_text(pdb.read_text().replace("END\n", addition + "END\n"))
+    spec = replace(first, mutations=(first.mutations[0], MutationSpec("A6V", "B", 6, "", "A", "V")))
+    monkeypatch.setattr(pipeline, "_build_variant_pdb", lambda base, variant, output: str(base))
+    monkeypatch.setattr(pipeline, "_score_mpnn", lambda *a, **k: {"G5A": (0.2, 0.4), "A6V": (0.3, 0.5)})
+    observed = []
+
+    def physics(*args, **kwargs):
+        observed.append(tuple(kwargs["restraint_exclusion_residues"]))
+        offset = float(len(observed))
+        return {
+            "dg_bind_kcal_mol_restarts": [offset] * 3,
+            "e_cross_interface_total_screened_kcal_mol_restarts": [offset] * 3,
+        }
+
+    monkeypatch.setattr(pipeline, "_score_openmm", physics)
+    run_structural_cohort(spec, target="T", parent_id="WT", output_dir=tmp_path / "out", n_restarts=3)
+    assert observed == [("B:5",), ("B:5",), ("B:6",), ("B:6",)]
+
+
+def test_final_publication_interruption_resumes_only_own_outputs(tmp_path: Path, monkeypatch) -> None:
+    import pepddg.structural_pipeline as pipeline
+
+    monkeypatch.setattr(pipeline, "_build_variant_pdb", lambda base, variant, output: str(base))
+    monkeypatch.setattr(pipeline, "_score_mpnn", lambda *a, **k: {"G5A": (0.2, 0.4)})
+    calls = []
+
+    def physics(*args, **kwargs):
+        calls.append(1)
+        value = float(len(calls))
+        return {
+            "dg_bind_kcal_mol_restarts": [value] * 3,
+            "e_cross_interface_total_screened_kcal_mol_restarts": [value] * 3,
+        }
+
+    monkeypatch.setattr(pipeline, "_score_openmm", physics)
+    original_replace = pipeline.os.replace
+
+    def interrupted_replace(source, destination):
+        if Path(destination).name == "scores.csv":
+            raise OSError("publication interrupted")
+        return original_replace(source, destination)
+
+    output = tmp_path / "out"
+    monkeypatch.setattr(pipeline.os, "replace", interrupted_replace)
+    with pytest.raises(OSError, match="publication interrupted"):
+        run_structural_cohort(_spec(tmp_path), target="T", parent_id="WT", output_dir=output, n_restarts=3)
+    assert (output / "features.csv").exists()
+    monkeypatch.setattr(pipeline.os, "replace", original_replace)
+    result = run_structural_cohort(_spec(tmp_path), target="T", parent_id="WT", output_dir=output, n_restarts=3)
+    assert result.features["mutation"].tolist() == ["G5A"]
+    assert len(calls) == 2
+    assert (output / "scores.csv").exists()
+
+
+def test_changed_producer_code_refuses_saved_partial_work(tmp_path: Path, monkeypatch) -> None:
+    import pepddg.structural_pipeline as pipeline
+
+    monkeypatch.setattr(pipeline, "_build_variant_pdb", lambda base, variant, output: str(base))
+    monkeypatch.setattr(pipeline, "_score_openmm", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("interrupted")))
+    output = tmp_path / "out"
+    with pytest.raises(RuntimeError, match="interrupted"):
+        run_structural_cohort(_spec(tmp_path), target="T", parent_id="WT", output_dir=output, n_restarts=3)
+    original_read = Path.read_bytes
+
+    def changed_producer(path):
+        content = original_read(path)
+        if path.name == "structural_features.py":
+            return content + b"# simulated producer change\n"
+        return content
+
+    monkeypatch.setattr(Path, "read_bytes", changed_producer)
+    with pytest.raises(ValueError, match="checkpoint identity"):
+        run_structural_cohort(_spec(tmp_path), target="T", parent_id="WT", output_dir=output, n_restarts=3)
