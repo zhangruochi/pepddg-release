@@ -7,8 +7,6 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-gemmi = pytest.importorskip("gemmi")
-
 from pepddg.structure_contract import (
     ComplexSpec,
     MutationSpec,
@@ -16,6 +14,8 @@ from pepddg.structure_contract import (
     read_mutations_csv,
     validate_complex,
 )
+
+gemmi = pytest.importorskip("gemmi")
 
 
 def _atom(serial: int, name: str, residue: str, chain: str, number: int, x: float) -> str:
@@ -127,7 +127,8 @@ def test_disulfide_closure_rejects_inverted_peptide_stereochemistry(tmp_path: Pa
     structure = gemmi.read_structure(str(source))
     residue = next(residue for residue in structure[0]["I"] if residue.seqid.num == 11)
     atoms = {atom.name: atom for atom in residue}
-    point = lambda atom: np.array([atom.pos.x, atom.pos.y, atom.pos.z])
+    def point(atom):
+        return np.array([atom.pos.x, atom.pos.y, atom.pos.z])
     ca = point(atoms["CA"])
     normal = np.cross(point(atoms["N"]) - ca, point(atoms["C"]) - ca)
     cb = point(atoms["CB"])
