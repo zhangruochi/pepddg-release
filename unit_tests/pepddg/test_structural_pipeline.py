@@ -185,6 +185,120 @@ def test_each_mutant_uses_its_own_paired_wt_protocol(tmp_path: Path, monkeypatch
     assert observed == [("B:5",), ("B:5",), ("B:6",), ("B:6",)]
 
 
+def test_target_union_wt_scope_scores_wt_once_and_records_protocol(tmp_path: Path, monkeypatch) -> None:
+    import pepddg.structural_pipeline as pipeline
+
+    first = _spec(tmp_path)
+    pdb = first.structure_path
+    addition = "".join(_atom(20 + index, name, "ALA", "B", 6, 12.0 + delta)
+                       for index, (name, delta) in enumerate((("N", 0.0), ("CA", 1.0), ("C", 2.0), ("O", 3.0))))
+    pdb.write_text(pdb.read_text().replace("END\n", addition + "END\n"))
+    spec = replace(first, mutations=(
+        first.mutations[0], MutationSpec("G5V", "B", 5, "", "G", "V"),
+        MutationSpec("A6V", "B", 6, "", "A", "V"),
+    ))
+    monkeypatch.setattr(pipeline, "_build_variant_pdb", lambda base, variant, output: str(base))
+    monkeypatch.setattr(pipeline, "_score_mpnn", lambda *a, **k: {
+        "G5A": (0.2, 0.4), "G5V": (0.3, 0.5), "A6V": (0.4, 0.6)
+    })
+    observed = []
+
+    def physics(*args, **kwargs):
+        observed.append(tuple(kwargs["restraint_exclusion_residues"]))
+        value = float(len(observed))
+        return {
+            "dg_bind_kcal_mol_restarts": [value] * 3,
+            "e_cross_interface_total_screened_kcal_mol_restarts": [value] * 3,
+        }
+
+    monkeypatch.setattr(pipeline, "_score_openmm", physics)
+    result = run_structural_cohort(
+        spec, target="T", parent_id="WT", output_dir=tmp_path / "union",
+        n_restarts=3, wt_restraint_scope="target_union",
+    )
+    assert observed == [("B:5", "B:6"), ("B:5",), ("B:5",), ("B:6",)]
+    assert result.features["ddg_bind_proxy"].tolist() == [1.0, 2.0, 3.0]
+    assert result.provenance["wt_restraint_scope"] == "target_union"
+
+
+def test_target_union_resume_reuses_wt_and_refuses_scope_change(tmp_path: Path, monkeypatch) -> None:
+    import pepddg.structural_pipeline as pipeline
+
+    first = _spec(tmp_path)
+    spec = replace(first, mutations=(first.mutations[0], MutationSpec("G5V", "B", 5, "", "G", "V")))
+    monkeypatch.setattr(pipeline, "_build_variant_pdb", lambda base, variant, output: str(base))
+    monkeypatch.setattr(pipeline, "_score_mpnn", lambda *a, **k: {"G5A": (0.2, 0.4), "G5V": (0.3, 0.5)})
+    calls = []
+
+    def physics(*args, **kwargs):
+        calls.append(tuple(kwargs["restraint_exclusion_residues"]))
+        if len(calls) == 3:
+            raise RuntimeError("simulated interruption")
+        value = float(len(calls))
+        return {
+            "dg_bind_kcal_mol_restarts": [value] * 3,
+            "e_cross_interface_total_screened_kcal_mol_restarts": [value] * 3,
+        }
+
+    monkeypatch.setattr(pipeline, "_score_openmm", physics)
+    output = tmp_path / "union-interrupted"
+    with pytest.raises(RuntimeError, match="interruption"):
+        run_structural_cohort(
+            spec, target="T", parent_id="WT", output_dir=output,
+            n_restarts=3, wt_restraint_scope="target_union",
+        )
+    with pytest.raises(ValueError, match="checkpoint identity"):
+        run_structural_cohort(spec, target="T", parent_id="WT", output_dir=output, n_restarts=3)
+    result = run_structural_cohort(
+        spec, target="T", parent_id="WT", output_dir=output,
+        n_restarts=3, wt_restraint_scope="target_union",
+    )
+    assert result.features["mutation"].tolist() == ["G5A", "G5V"]
+    assert len(calls) == 4
+    assert (output / "scores.csv").exists()
+
+
+def test_target_union_accepts_original_pool_sites_beyond_scored_rows(tmp_path: Path, monkeypatch) -> None:
+    import pepddg.structural_pipeline as pipeline
+
+    spec = _spec(tmp_path)
+    pdb = spec.structure_path
+    addition = "".join(_atom(20 + index, name, "ALA", "B", 6, 12.0 + delta)
+                       for index, (name, delta) in enumerate((("N", 0.0), ("CA", 1.0), ("C", 2.0), ("O", 3.0))))
+    pdb.write_text(pdb.read_text().replace("END\n", addition + "END\n"))
+    monkeypatch.setattr(pipeline, "_build_variant_pdb", lambda base, variant, output: str(base))
+    monkeypatch.setattr(pipeline, "_score_mpnn", lambda *a, **k: {"G5A": (0.2, 0.4)})
+    observed = []
+
+    def physics(*args, **kwargs):
+        observed.append(tuple(kwargs["restraint_exclusion_residues"]))
+        value = float(len(observed))
+        return {
+            "dg_bind_kcal_mol_restarts": [value] * 3,
+            "e_cross_interface_total_screened_kcal_mol_restarts": [value] * 3,
+        }
+
+    monkeypatch.setattr(pipeline, "_score_openmm", physics)
+    result = run_structural_cohort(
+        spec, target="T", parent_id="WT", output_dir=tmp_path / "original-pool",
+        n_restarts=3, wt_restraint_scope="target_union", wt_union_sites=("B:6", "B:5"),
+    )
+    assert observed == [("B:6", "B:5"), ("B:5",)]
+    assert result.provenance["wt_union_sites"] == ["B:6", "B:5"]
+
+
+def test_target_union_rejects_incomplete_or_invalid_site_pools(tmp_path: Path) -> None:
+    spec = _spec(tmp_path)
+    for sites, message in (((), "omits"), (("A:5", "B:5"), "invalid")):
+        output = tmp_path / f"rejected-{message}"
+        with pytest.raises(ValueError, match=message):
+            run_structural_cohort(
+                spec, target="T", parent_id="WT", output_dir=output,
+                n_restarts=3, wt_restraint_scope="target_union", wt_union_sites=sites,
+            )
+        assert not output.exists()
+
+
 def test_final_publication_interruption_resumes_only_own_outputs(tmp_path: Path, monkeypatch) -> None:
     import pepddg.structural_pipeline as pipeline
 

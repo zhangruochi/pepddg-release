@@ -64,8 +64,22 @@ def main(argv: list[str] | None = None) -> int:
         parser.add_argument("--seed", type=int, default=20260302)
         parser.add_argument("--platform", choices=("CPU", "CUDA"), default="CPU")
         parser.add_argument("--cpu-threads", type=int, default=2)
+        parser.add_argument(
+            "--wt-restraint-scope", choices=("per_mutation", "target_union"),
+            default="per_mutation", help="WT restraint exclusions; target_union is an unqualified historical-v5 preview",
+        )
+        parser.add_argument(
+            "--wt-union-sites-file", type=Path,
+            help="Optional complete historical target-site pool, one chain:resnum per line",
+        )
         args = parser.parse_args(argv[1:])
         try:
+            wt_union_sites = None
+            if args.wt_union_sites_file is not None:
+                wt_union_sites = tuple(
+                    line.strip() for line in args.wt_union_sites_file.read_text().splitlines()
+                    if line.strip()
+                )
             spec = ComplexSpec(
                 args.structure, args.peptide_chain, (args.receptor_chain,),
                 read_mutations_csv(args.mutations), args.closure,
@@ -73,7 +87,8 @@ def main(argv: list[str] | None = None) -> int:
             result = run_structural_cohort(
                 spec, target=args.target, parent_id=args.parent_id, output_dir=args.output,
                 n_restarts=args.n_restarts, seed=args.seed, platform=args.platform,
-                cpu_threads=args.cpu_threads,
+                cpu_threads=args.cpu_threads, wt_restraint_scope=args.wt_restraint_scope,
+                wt_union_sites=wt_union_sites,
             )
             logger.info("PepDDG structural cohort scored: %s", result.provenance)
             return 0

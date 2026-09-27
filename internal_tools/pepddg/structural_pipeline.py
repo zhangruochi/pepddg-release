@@ -177,6 +177,8 @@ def run_structural_cohort(
     seed: int = 20260302,
     platform: str = "CPU",
     cpu_threads: int = 2,
+    wt_restraint_scope: str = "per_mutation",
+    wt_union_sites: Sequence[str] | None = None,
 ) -> StructuralResult:
     """Score a complete one-parent linear substitution cohort from coordinates.
 
@@ -194,6 +196,32 @@ def run_structural_cohort(
         raise ValueError("n_restarts must be >=3 and cpu_threads must be 1..4")
     if platform.upper() not in {"CPU", "CUDA"}:
         raise ValueError("platform must be CPU or CUDA")
+    if wt_restraint_scope not in {"per_mutation", "target_union"}:
+        raise ValueError("wt_restraint_scope must be per_mutation or target_union")
+    if wt_restraint_scope != "target_union" and wt_union_sites is not None:
+        raise ValueError("wt_union_sites requires target_union scope")
+
+    requested_sites = tuple(dict.fromkeys(
+        f"{mutation.chain}:{mutation.resnum}" for mutation in spec.mutations
+    ))
+    if wt_union_sites is None:
+        union_exclusion = requested_sites
+    else:
+        if isinstance(wt_union_sites, (str, bytes)):
+            raise ValueError("wt_union_sites must be a sequence of chain:resnum tokens")
+        allowed_numbers = {number for number, _, _ in validation.peptide_residues}
+        explicit_sites = []
+        for site in wt_union_sites:
+            if not isinstance(site, str):
+                raise ValueError("wt_union_sites must contain chain:resnum strings")
+            chain, separator, number = site.partition(":")
+            if (separator != ":" or chain != spec.peptide_chain
+                    or not number.isdecimal() or int(number) not in allowed_numbers):
+                raise ValueError(f"invalid WT union site: {site!r}")
+            explicit_sites.append(site)
+        union_exclusion = tuple(dict.fromkeys(explicit_sites))
+        if not set(requested_sites).issubset(union_exclusion):
+            raise ValueError("wt_union_sites omits a scored mutation site")
 
     from ._backend.variant_builder import VariantSpec
 
@@ -208,7 +236,13 @@ def run_structural_cohort(
         restraint_k2=100.0, cross_interaction_interface_cutoff_a=8.0,
         coulomb_screening_distance_nm=0.10, coulomb_screening_dielectric=80.0,
         restraint_exclusion_distance_a=10.0, random_seed=seed,
+        wt_restraint_scope=wt_restraint_scope,
+        wt_union_sites=union_exclusion if wt_restraint_scope == "target_union" else None,
     )
+    physics_kwargs = {
+        key: value for key, value in kwargs.items()
+        if key not in {"wt_restraint_scope", "wt_union_sites"}
+    }
     source_files = [
         Path(__file__), Path(__file__).parent / "api.py",
         Path(__file__).parent / "config.py",
@@ -273,6 +307,13 @@ def run_structural_cohort(
             base, sites, spec.peptide_chain, list(spec.receptor_chains)
         ).set_index("label")
         rows = []
+        shared_wt = None
+        shared_wt_checkpoint = checkpoint_dir / "wt.target_union.json"
+        if wt_restraint_scope == "target_union" and not shared_wt_checkpoint.exists() and any(
+            (checkpoint_dir / "mutations" / f"{index:04d}.json").exists()
+            for index in range(len(spec.mutations))
+        ):
+            raise ValueError("target-union WT checkpoint is missing for completed mutation work")
         for index, mutation in enumerate(spec.mutations):
             row_checkpoint = checkpoint_dir / "mutations" / f"{index:04d}.json"
             if row_checkpoint.exists():
@@ -282,20 +323,32 @@ def run_structural_cohort(
                 rows.append(row)
                 continue
             exclusion = [f"{mutation.chain}:{mutation.resnum}"]
-            wt_checkpoint = checkpoint_dir / "mutations" / f"{index:04d}.wt.json"
-            if wt_checkpoint.exists():
-                wt = _load_checkpoint(wt_checkpoint, identity)
+            if wt_restraint_scope == "target_union":
+                if shared_wt is None:
+                    if shared_wt_checkpoint.exists():
+                        shared_wt = _load_checkpoint(shared_wt_checkpoint, identity)
+                    else:
+                        shared_wt = _score_openmm(
+                            str(wt_pdb), spec.receptor_chains[0], spec.peptide_chain,
+                            **physics_kwargs, restraint_exclusion_residues=union_exclusion,
+                        )
+                        _save_checkpoint(shared_wt_checkpoint, identity, shared_wt)
+                wt = shared_wt
             else:
-                wt = _score_openmm(
-                    str(wt_pdb), spec.receptor_chains[0], spec.peptide_chain,
-                    **kwargs, restraint_exclusion_residues=exclusion,
-                )
-                _save_checkpoint(wt_checkpoint, identity, wt)
+                wt_checkpoint = checkpoint_dir / "mutations" / f"{index:04d}.wt.json"
+                if wt_checkpoint.exists():
+                    wt = _load_checkpoint(wt_checkpoint, identity)
+                else:
+                    wt = _score_openmm(
+                        str(wt_pdb), spec.receptor_chains[0], spec.peptide_chain,
+                        **physics_kwargs, restraint_exclusion_residues=exclusion,
+                    )
+                    _save_checkpoint(wt_checkpoint, identity, wt)
             variant = VariantSpec(mutation.wt, mutation.chain, mutation.resnum, mutation.mut)
             mutant_pdb = _build_variant_pdb(base, variant, work / mutation.label)
             mutant = _score_openmm(
                 mutant_pdb, spec.receptor_chains[0], spec.peptide_chain,
-                **kwargs, restraint_exclusion_residues=exclusion,
+                **physics_kwargs, restraint_exclusion_residues=exclusion,
             )
             for key in (_BIND_KEY, _XINT_KEY):
                 if key not in wt or key not in mutant:
@@ -324,6 +377,8 @@ def run_structural_cohort(
         "mpnn_rng": "torch manual seed before complex; isolated chain consumes continued stream",
         "physics_channels": {"bind": _BIND_KEY, "interface": _XINT_KEY},
         "physics_protocol": kwargs, "mutation_ids": list(validation.mutation_ids),
+        "wt_restraint_scope": wt_restraint_scope,
+        "wt_union_sites": list(union_exclusion) if wt_restraint_scope == "target_union" else None,
         "historical_reproduction_status": "unverified",
         "resume_identity_sha256": identity,
     }

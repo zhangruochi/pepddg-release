@@ -68,6 +68,23 @@ OpenMM and ProteinMPNN random generators. `--platform CPU` is the default;
 `--cpu-threads` from 1 to 4 based on actual allocation. On CPU, seven
 restarts for a full cohort may be expensive.
 
+This branch has an **unqualified historical-v5 WT preview**:
+`--wt-restraint-scope target_union` (Python:
+`wt_restraint_scope="target_union"`). The default `per_mutation` scores WT
+separately for each substitution using that substitution's restraint-exclusion
+site. `target_union` scores WT once using the ordered unique union of all
+submitted substitution sites, then scores each mutant with its own site. If
+the historical scoring pool includes sites outside the evaluated subset, pass
+`--wt-union-sites-file /path/to/sites.txt` (Python: `wt_union_sites=("I:5", ... )`)
+with one `chain:resnum` per line in the original order. The list must include
+every scored mutation site and is recorded in the resume identity and
+provenance. This mode matches the WT site-union operation in the archived v5
+source script. The actual historical NFS executable and input structures are
+not authenticated. Changing
+the candidate cohort or site list can change the WT physical protocol in this
+mode; keep the original target pool fixed. Neither mode is yet qualified as
+paper-equivalent.
+
 Python API:
 
 ```python
