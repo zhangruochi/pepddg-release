@@ -51,6 +51,9 @@ _EXPORT_MODULES = {
     "UnsupportedChemistry": "structure_contract",
     "read_mutations_csv": "structure_contract",
     "validate_complex": "structure_contract",
+    "StructuralResult": "structural_pipeline",
+    "paired_restart_ddg": "structural_pipeline",
+    "run_structural_cohort": "structural_pipeline",
 }
 
 
@@ -98,5 +101,8 @@ __all__ = [
     "ComplexValidation",
     "UnsupportedChemistry",
     "read_mutations_csv",
+    "StructuralResult",
+    "paired_restart_ddg",
+    "run_structural_cohort",
     "validate_complex",
 ]

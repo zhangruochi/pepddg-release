@@ -12,6 +12,8 @@ import sys
 from .config import load_config
 from .pipeline import run_pepddg
 from .api import score_feature_csv
+from .structure_contract import ComplexSpec, read_mutations_csv
+from .structural_pipeline import run_structural_cohort
 
 
 logging.basicConfig(
@@ -31,6 +33,36 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
 
 def main(argv: list[str] | None = None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
+    if argv and argv[0] == "score-structures":
+        parser = argparse.ArgumentParser(description="Score a linear receptor-peptide mutation cohort from a structure.")
+        parser.add_argument("--structure", required=True, help="PDB or mmCIF complex")
+        parser.add_argument("--peptide-chain", required=True)
+        parser.add_argument("--receptor-chain", required=True)
+        parser.add_argument("--mutations", required=True, help="Explicit mutation CSV")
+        parser.add_argument("--target", required=True)
+        parser.add_argument("--parent-id", required=True)
+        parser.add_argument("--output", required=True, help="New or empty output directory")
+        parser.add_argument("--closure", default="linear", help="Molecular closure; only linear is currently validated")
+        parser.add_argument("--n-restarts", type=int, default=7)
+        parser.add_argument("--seed", type=int, default=20260302)
+        parser.add_argument("--platform", choices=("CPU", "CUDA"), default="CPU")
+        parser.add_argument("--cpu-threads", type=int, default=2)
+        args = parser.parse_args(argv[1:])
+        try:
+            spec = ComplexSpec(
+                args.structure, args.peptide_chain, (args.receptor_chain,),
+                read_mutations_csv(args.mutations), args.closure,
+            )
+            result = run_structural_cohort(
+                spec, target=args.target, parent_id=args.parent_id, output_dir=args.output,
+                n_restarts=args.n_restarts, seed=args.seed, platform=args.platform,
+                cpu_threads=args.cpu_threads,
+            )
+            logger.info("PepDDG structural cohort scored: %s", result.provenance)
+            return 0
+        except Exception:
+            logger.exception("PepDDG structural scoring failed.")
+            return 2
     if argv and argv[0] == "score-features":
         parser = argparse.ArgumentParser(description="Score one complete PepDDG raw-feature cohort.")
         parser.add_argument("--input", required=True, help="Raw feature CSV")

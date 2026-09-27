@@ -68,7 +68,7 @@ def test_duplicate_mutation_identity_is_rejected(tmp_path: Path) -> None:
         validate_complex(spec)
 
 
-def test_real_1cbw_mutation_mapping() -> None:
+def test_real_1cbw_disulfide_is_not_claimed_linear() -> None:
     root = Path(__file__).resolve().parents[2]
     structure = root / "research/pepddg_v5/data/independent_validation/scoring_input/1CBW.pdb"
     spec = ComplexSpec(
@@ -77,9 +77,8 @@ def test_real_1cbw_mutation_mapping() -> None:
         receptor_chains=("F", "G", "H"),
         mutations=(MutationSpec("TI11A", "I", 11, "", "T", "A"),),
     )
-    result = validate_complex(spec)
-    assert result.mutation_ids == ("TI11A",)
-    assert len(result.peptide_residues) == 58
+    with pytest.raises(UnsupportedChemistry, match="disulfide"):
+        validate_complex(spec)
 
 
 def test_fractional_residue_number_is_rejected(tmp_path: Path) -> None:
@@ -95,3 +94,26 @@ def test_ambiguous_alternate_location_is_rejected(tmp_path: Path) -> None:
     pdb.write_text(text)
     with pytest.raises(UnsupportedChemistry, match="alternate"):
         validate_complex(_spec(pdb))
+
+
+def test_peptide_disulfide_closure_is_not_scored_as_linear(tmp_path: Path) -> None:
+    pdb = tmp_path / "disulfide.pdb"
+    lines = []
+    serial = 1
+    for residue, chain, number, offset in (("ALA", "A", 1, 0.0), ("CYS", "B", 5, 8.0), ("CYS", "B", 6, 16.0)):
+        for name, delta in (("N", 0.0), ("CA", 1.0), ("C", 2.0), ("O", 3.0)):
+            lines.append(_atom(serial, name, residue, chain, number, offset + delta))
+            serial += 1
+        if chain == "B":
+            lines.append(_atom(serial, "SG", residue, chain, number, 12.0 if number == 5 else 14.0))
+            serial += 1
+    pdb.write_text("".join(lines) + "END\n")
+    with pytest.raises(UnsupportedChemistry, match="disulfide"):
+        validate_complex(_spec(pdb, wt="C", mut="A"))
+
+
+def test_crystal_waters_are_reported_and_excluded_from_polymer_validation(tmp_path: Path) -> None:
+    pdb = _pdb(tmp_path / "complex.pdb")
+    pdb.write_text(pdb.read_text().replace("END\n", "HETATM   90  O   HOH B  10      25.000   0.000   0.000  1.00 20.00           O\nEND\n"))
+    result = validate_complex(_spec(pdb))
+    assert result.excluded_water_atoms == 1

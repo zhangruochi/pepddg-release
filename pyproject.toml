@@ -29,10 +29,13 @@ test = ["pytest>=7.4", "build>=1.0"]
 pepddg = "pepddg.run_pepddg:main"
 
 [tool.setuptools]
-packages = ["pepddg"]
+packages = ["pepddg", "pepddg._backend"]
+license-files = ["LICENSE", "LICENSE-MIT", "LICENSE_SCOPE.md"]
 
 [tool.setuptools.package-dir]
 pepddg = "internal_tools/pepddg"
+"pepddg._backend" = "internal_tools/pepddg/_backend"
 
 [tool.setuptools.package-data]
 pepddg = ["configs/*.yaml", "minimal_example/*.yaml", "minimal_example/*.csv"]
+"pepddg._backend" = ["PROTEINMPNN_LICENSE", "SOURCE_PROVENANCE.json", "model_weights/*.pt"]

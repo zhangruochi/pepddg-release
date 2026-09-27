@@ -52,6 +52,7 @@ class ComplexValidation:
     mutation_ids: tuple[str, ...]
     peptide_residues: tuple[tuple[int, str, str], ...]
     closure_kind: str
+    excluded_water_atoms: int
 
 
 def _icode(value: str) -> str:
@@ -118,8 +119,12 @@ def validate_complex(spec: ComplexSpec) -> ComplexValidation:
         raise ValueError("missing structure chains: " + ", ".join(missing))
 
     residues: dict[tuple[str, int, str], object] = {}
+    excluded_water_atoms = 0
     for chain_name in selected:
         for residue in chains[chain_name]:
+            if residue.name in {"HOH", "WAT"} and residue.het_flag != "A":
+                excluded_water_atoms += len(residue)
+                continue
             if residue.name not in _ONE_LETTER or residue.het_flag != "A":
                 raise UnsupportedChemistry(
                     f"nonstandard residue or HETATM in selected chain {chain_name}: {residue.name}"
@@ -139,7 +144,22 @@ def validate_complex(spec: ComplexSpec) -> ComplexValidation:
             raise UnsupportedChemistry("explicit peptide covalent connections require topology validation")
 
     peptide = chains[spec.peptide_chain]
-    peptide_residues = list(peptide)
+    peptide_residues = [residue for residue in peptide if residue.name in _ONE_LETTER]
+    sulfurs = [
+        (residue.seqid.num, atom)
+        for residue in peptide_residues if residue.name == "CYS"
+        for atom in residue if atom.name == "SG"
+    ]
+    for index, (first_number, first) in enumerate(sulfurs):
+        for second_number, second in sulfurs[index + 1:]:
+            if first_number == second_number:
+                continue
+            distance = np.linalg.norm(
+                np.array([first.pos.x, first.pos.y, first.pos.z])
+                - np.array([second.pos.x, second.pos.y, second.pos.z])
+            )
+            if distance < 2.5:
+                raise UnsupportedChemistry("possible peptide disulfide closure detected")
     if len(peptide_residues) >= 2:
         first = next(atom for atom in peptide_residues[0] if atom.name == "N")
         last = next(atom for atom in peptide_residues[-1] if atom.name == "C")
@@ -183,4 +203,5 @@ def validate_complex(spec: ComplexSpec) -> ComplexValidation:
         mutation_ids=tuple(m.label for m in spec.mutations),
         peptide_residues=peptide_listing,
         closure_kind=spec.closure_kind,
+        excluded_water_atoms=excluded_water_atoms,
     )
