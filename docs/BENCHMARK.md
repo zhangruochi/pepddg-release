@@ -17,7 +17,7 @@ We therefore report four separate checks:
 | Check | Required evidence | Current status |
 |---|---|
 | B0 identity/protocol lock | Exact target–chain–residue–WT–mut keys, structures, exclusions, channel definitions and final metric manifest for all relevant cohorts | In progress; do not infer missing keys from rounded features |
-| B1a frozen regression | Installed CLI recomputes the 332-row score vector, pooled rho and interval without reading the stored aggregate | Pending full recorded check |
+| B1a frozen regression | Installed module recomputes the 332-row score vector, pooled rho and interval without giving labels to the predictor | Run `python -m pepddg.frozen_benchmark --repo-root . --output /tmp/pepddg-frozen-replay`; this checks published features only |
 | B1b historical raw-channel reconstruction | Historical raw energy/restart, geometry and MPNN terms reproduce original channel ranks | Pending authenticated raw-channel recovery |
 | B2 fresh end-to-end | Complete 332/33 and final-paper cohorts rerun from structures with all channels, seven paired restarts and exact member accounting | Not run |
 | B3 platform parity | Installed release and platform adapter exercise real orchestration and agree on keyed fresh results | Not run |
@@ -31,6 +31,11 @@ authenticated 331/33 cohort and per-target aggregation, coverage and
 prioritization metrics. These are prospective engineering tolerances, not a
 claim of statistical equivalence. The exact benchmark specification and
 rebuttal evidence index live in the platform workflow plan.
+
+The B1a command writes `scores.csv` and `report.json`. It validates input
+hashes, the 332/33 membership, the complete ranked vector, pooled rho and
+the recorded target-bootstrap interval against tolerances fixed before this
+packaging work. The report names its scope `published_anchor_rank_regression_not_structure_to_score`.
 
 The paper's seven-restart OpenMM protocol is expensive. A one-case CPU smoke
 tests only execution. The available frozen CSV can be replayed with the

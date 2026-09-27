@@ -87,6 +87,17 @@ ProteinMPNN code and checkpoint retain their MIT notice. Source snapshots and
 hashes for the structural producer are in
 `internal_tools/pepddg/_backend/SOURCE_PROVENANCE.json`.
 
+To replay the published 332-row **frozen feature** result from
+an installed package and this clone, run:
+
+```bash
+python -m pepddg.frozen_benchmark --repo-root . --output /tmp/pepddg-frozen-replay
+```
+
+This writes row-level scores and a metric report. Experimental labels are
+kept out of the predictor input. A PASS verifies the recorded score/metric
+calculation only; the fresh structural SKEMPI run has a separate gate.
+
 ## License and commercial use
 
 New release packaging and structural orchestration are under
