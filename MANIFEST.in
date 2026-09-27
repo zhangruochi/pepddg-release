@@ -1,0 +1,10 @@
+include CITATION.cff CHANGELOG.md CONTRIBUTING.md THIRD_PARTY_NOTICES.md environment.yaml
+recursive-include docs *.md
+recursive-include examples *.csv
+include research/pepddg_v5/data/DATA_PROVENANCE.md
+include research/pepddg_v5/results/v19_sanitized_baseline/main_eval_v19.csv
+include research/pepddg_v5/results/v19_sanitized_baseline/bpti_eval_v19.csv
+include research/pepddg_v5/results/v19_sanitized_baseline/ood_eval_v19.csv
+include research/pepddg_v5/results/zs_cal_neurips_release/paper_numbers_zs_cal.json
+include research/pepddg_v5/results/zs_cal_neurips_release/release_manifest_zs_cal.json
+include research/pepddg_v5/results/v19_release_manifest.json

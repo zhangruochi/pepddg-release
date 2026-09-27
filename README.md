@@ -20,6 +20,7 @@ with one command:
 conda env create -f environment.yaml
 conda activate pepddg
 pepddg --help
+pepddg doctor --json
 ```
 
 `environment.yaml` installs OpenMM and PDBFixer from conda-forge, PyTorch,
@@ -29,6 +30,9 @@ your own compute resources. The lightweight feature-only path can instead be
 installed with `python -m pip install .` in an existing Python 3.12 environment.
 The full structural workflow needs the conda environment because PDBFixer is
 distributed through conda-forge. See [installation and input details](docs/STRUCTURES.md).
+`pepddg doctor` checks dependency and bundled-checkpoint presence without
+running a model; presence alone does not establish a working OpenMM platform.
+For a concise Chinese walkthrough, see [中文快速入门](docs/QUICKSTART.zh-CN.md).
 
 ## Use
 
@@ -126,3 +130,6 @@ python -m pepddg.release_audit --repo-root . --json
 PASS is distinct from a fresh scientific reproduction. Research-side work can
 continue separately; this release changes only through deliberate versioned
 updates.
+
+See [release history](CHANGELOG.md), [contribution guidance](CONTRIBUTING.md),
+and [third-party notices](THIRD_PARTY_NOTICES.md).

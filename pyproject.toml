@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,6 +8,7 @@ version = "0.1.0"
 description = "PepDDG peptide-protein mutation ranking research tool"
 readme = "README.md"
 requires-python = ">=3.12"
+license-files = ["LICENSE", "LICENSE-MIT", "LICENSE_SCOPE.md"]
 dependencies = [
   "numpy>=1.26",
   "pandas>=2.1",
@@ -30,7 +31,6 @@ pepddg = "pepddg.run_pepddg:main"
 
 [tool.setuptools]
 packages = ["pepddg", "pepddg._backend"]
-license-files = ["LICENSE", "LICENSE-MIT", "LICENSE_SCOPE.md"]
 
 [tool.setuptools.package-dir]
 pepddg = "internal_tools/pepddg"
