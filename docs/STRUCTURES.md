@@ -30,6 +30,8 @@ the present PDBFixer mutation builder. The CLI requires exactly one receptor
 chain; choose the intended chain pair explicitly when the source structure
 contains more chains. Other chains are excluded from scoring. This changes the
 physical system, so report the selected pair with any result.
+Peptide residue numbers must be consecutive, without insertion codes; a gap
+would make the structural and ProteinMPNN position maps disagree.
 
 The validated structural path currently supports **linear peptides only**.
 Head-to-tail, side-chain, linker and disulfide cyclization, covalent
@@ -53,8 +55,10 @@ pepddg score-structures \
   --output /path/to/new-results
 ```
 
-`--output` must be absent, empty, or contain only a matching `.pepddg-work`
-checkpoint from an interrupted run. Reissue the identical command to resume;
+`--output` must be absent, empty, or contain a matching `.pepddg-work`
+checkpoint from an interrupted run. During an interrupted final publication,
+it may also contain generated files whose hashes match the publication
+checkpoint. Reissue the identical command to resume;
 changed structure, mutation list, protocol, checkpoint or producer code is
 rejected. For a research workflow the default
 `--n-restarts 7` keeps the historical paired-restart setting; smaller values
@@ -87,6 +91,8 @@ print(result.scores.table)
 The public structural workflow builds WT and mutant PDBs with PDBFixer;
 OpenMM scores each with an Amber14/OBC2 implicit-solvent model, two-stage
 restrained minimization (200/500 iterations) and seven restarts by default.
+WT is scored separately for each mutation site with the same restraint and
+jitter exclusion used for that mutant.
 The interface and binding-proxy ΔΔG features are the median of mutant minus
 WT values **at matching restart indices**, requiring at least three finite
 pairs. The interface channel uses the screened non-heavy interface energy
@@ -103,7 +109,7 @@ Successful output directory contents:
 | `features.csv` | Unranked complete raw-channel table with target, parent and mutation identities |
 | `scores.csv` | Same cohort after frozen PepDDG rank fusion |
 | `provenance.json` | Input/checkpoint hashes, excluded water count, selected protocol, seed, restart count and channel keys |
-| `.pepddg-work/` | Hashed, resumable WT and per-mutation intermediate results |
+| `.pepddg-work/` | Hashed, resumable per-mutation WT and mutant intermediates and publication marker |
 
 No score files are written until every requested mutation has validated
 channels. Failed jobs retain completed mutation work for an exact-input retry;

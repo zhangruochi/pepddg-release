@@ -48,7 +48,7 @@ JSON file records the cohort and input hash. Required columns are `target`,
 `n_iface_contacts_8a`, `n_neighbors_10a`, `mpnn_neg_llr_complex` and
 `mpnn_ddg_bind`. The interface rejects missing/nonfinite channels, repeated
 mutation identities, mixed target/parent cohorts, experimental labels and
-precomputed ranks. **A feature CSV is not an end-to-end reproduction.**
+precomputed ranks and any extra columns. **A feature CSV is not an end-to-end reproduction.**
 
 To generate these channels from a prepared linear complex and rank its
 mutations:
@@ -62,7 +62,8 @@ pepddg score-structures \
   --output /tmp/pepddg-structural-result
 ```
 
-The default is seven paired OpenMM restarts per WT and mutant. This can be
+The default is seven paired OpenMM restarts for each mutation, with WT and
+mutant using the same mutation-site restraint exclusion. This can be
 slow on CPU. This command is a **workflow template**, not the paper's
 full SKEMPI cohort or a validated prediction for cyclic peptides. The
 single-receptor-chain input contract and currently unsupported chemistries are
