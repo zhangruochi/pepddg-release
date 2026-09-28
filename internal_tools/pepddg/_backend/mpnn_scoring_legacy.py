@@ -14,10 +14,10 @@ This decomposition isolates the binding contribution from the overall
 structural fitness, following the StaB framework (Buss et al., 2024).
 
 Usage:
-    conda run -n research python research/pepddg_v5/scripts/mpnn_scoring.py \
-        --cohort research/pepddg_v5/results/phase0/cohort_locked.csv \
-        --pdb-dir /data1/nfs/results/pepddg_v5_scoring/predicted \
-        --output-csv research/pepddg_v5/results/phase1/mpnn_features.csv \
+    python -m pepddg._backend.mpnn_scoring_legacy \
+        --cohort inputs/cohort.csv \
+        --pdb-dir inputs/structures \
+        --output-csv results/mpnn_features.csv \
         --device cpu
 """
 from __future__ import annotations

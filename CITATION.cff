@@ -7,5 +7,5 @@ title: "PepDDG: Peptide–Protein Binding ΔΔG Prediction via Information Chann
 type: software
 authors:
   - name: "PepDDG project team"
-version: 0.1.1
+version: 0.1.2
 repository-code: "https://github.com/zhangruochi/pepddg-release"

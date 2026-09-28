@@ -3,35 +3,37 @@
   "purpose": "Historical producer source for faithful linear PepDDG channel generation; check protocol and model identity before paper-consistency claim.",
   "entries": [
     {
-      "source": "agentic_ai_platform/third-party/molecular_dynamics/implicit_relax_score.py",
+      "source": "PepDDG historical backend/implicit_relax_score.py",
       "source_sha256": "c35d6b29fff1cd84296758c92f1fa45f0c1830e33a47d4f84c532c24a59e0bbb",
       "bundled": "internal_tools/pepddg/_backend/implicit_relax_score.py",
-      "bundled_sha256": "c35d6b29fff1cd84296758c92f1fa45f0c1830e33a47d4f84c532c24a59e0bbb",
-      "source_revision": "95627ea6b45d4e909c7e143674f4c5628795d142"
+      "bundled_sha256": "da8d58f46b40a9e60a65f20cdbaf1083f7a707144b945b4eb46ea713ca8fb9f7",
+      "source_revision": "95627ea6b45d4e909c7e143674f4c5628795d142",
+      "modification": "validated disulfide and terminal-cap integrity checks; seeded missing-atom preparation (release commits b8cb0ba and 8e61e51)"
     },
     {
-      "source": "agentic_ai_platform/third-party/molecular_dynamics/variant_builder.py",
+      "source": "PepDDG historical backend/variant_builder.py",
       "source_sha256": "c5656e8b8710efa18582590e575f650a7171af8649a3aa5d05d1b94b90eb159f",
       "bundled": "internal_tools/pepddg/_backend/variant_builder.py",
-      "bundled_sha256": "c5656e8b8710efa18582590e575f650a7171af8649a3aa5d05d1b94b90eb159f",
-      "source_revision": "95627ea6b45d4e909c7e143674f4c5628795d142"
+      "bundled_sha256": "d78bbc7c39fc9d1ae6dc107a939eacba83b086418d7c9c3cdf9e7a30d9b861b9",
+      "source_revision": "95627ea6b45d4e909c7e143674f4c5628795d142",
+      "modification": "preserve validated disulfide connectivity and exact terminal caps (release commits b8cb0ba and 8e61e51)"
     },
     {
-      "source": "agentic_ai_platform/third-party/molecular_dynamics/cyclic_peptide_utils.py",
+      "source": "PepDDG historical backend/cyclic_peptide_utils.py",
       "source_sha256": "394d814eb7f86d8db11b015e244c2119a6085f658a7ae73bbb083549741a99f5",
       "bundled": "internal_tools/pepddg/_backend/cyclic_peptide_utils.py",
       "bundled_sha256": "394d814eb7f86d8db11b015e244c2119a6085f658a7ae73bbb083549741a99f5",
       "source_revision": "95627ea6b45d4e909c7e143674f4c5628795d142"
     },
     {
-      "source": "agentic_ai_platform/third-party/molecular_dynamics/tbmb_md_support.py",
+      "source": "PepDDG historical backend/tbmb_md_support.py",
       "source_sha256": "7ef3c59e52890abb37b3c7634642734b617daacc6e2d1a140ac6b2d6615f3cfa",
       "bundled": "internal_tools/pepddg/_backend/tbmb_md_support.py",
       "bundled_sha256": "7ef3c59e52890abb37b3c7634642734b617daacc6e2d1a140ac6b2d6615f3cfa",
       "source_revision": "95627ea6b45d4e909c7e143674f4c5628795d142"
     },
     {
-      "source": "agentic_ai_platform/third-party/ProteinMPNN/protein_mpnn_utils.py",
+      "source": "ProteinMPNN/protein_mpnn_utils.py",
       "source_sha256": "74c8f9b7553422a7a0bbd705874844ee103c8926c2c96f154a87e0b824071e1b",
       "bundled": "internal_tools/pepddg/_backend/protein_mpnn_utils.py",
       "bundled_sha256": "52fb4d1fdc3fc28fff33442817921af6c770b34bdf17e951adf6b5a9aab31718",
@@ -40,15 +42,15 @@
       "modification": "trailing whitespace normalized; no code semantics changed"
     },
     {
-      "source": "pepddg/research/pepddg_v5/scripts/mpnn_scoring.py",
+      "source": "PepDDG historical scripts/mpnn_scoring.py",
       "source_sha256": "1c2bf0ad17543731818f5f2241cb8119942c1dd5cb50f7f3307ecffa0a5dc37d",
       "bundled": "internal_tools/pepddg/_backend/mpnn_scoring_legacy.py",
-      "bundled_sha256": "ef4ef2a7f1fa6d637bb941db6ece28c929555da9a26f0f19bc95ccf9561bdffd",
-      "modification": "package-local ProteinMPNN utility imports",
+      "bundled_sha256": "6e4e67b87a3e8b1b821b936d9137e50d45046283a341fc86433eca4cba47b17a",
+      "modification": "package-local ProteinMPNN utility imports; portable usage example; no scoring semantics changed",
       "source_revision": "776aa662e78a4d7e4403e14b0e3508d06c236530"
     },
     {
-      "source": "agentic_ai_platform/third-party/ProteinMPNN/vanilla_model_weights/v_48_020.pt",
+      "source": "ProteinMPNN/vanilla_model_weights/v_48_020.pt",
       "source_sha256": "c9cb4a671d79604111231f8dbfc7c590e06f1197453b7a6854ac6661a642f5bd",
       "bundled": "internal_tools/pepddg/_backend/model_weights/v_48_020.pt",
       "bundled_sha256": "c9cb4a671d79604111231f8dbfc7c590e06f1197453b7a6854ac6661a642f5bd",
