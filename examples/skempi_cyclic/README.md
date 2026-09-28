@@ -4,7 +4,7 @@ This example runs the 35 single substitutions associated with the four cyclic
 targets used in the PepDDG paper: 1SMF (5 rows), 3EQS (10), 3EQY (11), and 5XCO
 (9). It runs the normal PepDDG structural workflow for every target, writes the
 three raw channels and cohort-relative scores, and creates a per-target metric
-table plus a comparison chart. Experimental labels are loaded only by the
+table, experimental scatter plots, ranking scatter plots and a comparison chart. Experimental labels are loaded only by the
 report script, after inference has completed.
 
 The deposited chemistry is preserved. 1SMF and 5XCO have disulfide closures;
@@ -44,7 +44,9 @@ computation.
 
 The output has one folder per target (`features.csv`, `scores.csv`,
 `provenance.json` and restartable `.pepddg-work/`), plus
-`report/target_metrics.csv` and `report/target_correlations.png`.
+`report/target_metrics.csv`, `report/report.json`, and three figures:
+`experiment_scatter`, `ranking_scatter`, and `target_correlations`, each
+exported as a high-resolution PNG and an editable SVG.
 
 ## Reference smoke result
 
@@ -59,6 +61,10 @@ check, not a measurement:
 | 3EQS | 10 | 0.697 | 0.842 | 0.145 | 0.867 |
 | 3EQY | 11 | 0.836 | 0.718 | 0.118 | 0.891 |
 | 5XCO | 9 | 0.912 | 0.854 | 0.059 | 0.850 |
+
+![Fresh scores versus experimental ΔΔG](results_reference/report/experiment_scatter.png)
+
+![Archived and fresh within-target score percentiles](results_reference/report/ranking_scatter.png)
 
 ![Fresh and archived paper-score correlations by target](results_reference/report/target_correlations.png)
 
@@ -89,3 +95,20 @@ true-disulfide pair (1SMF and 5XCO) uses the same aggregate criteria. These
 limits were set for this engineering smoke; the small cohorts are not
 equivalence intervals. `report.py` reports metrics but does not silently
 convert failed limits into a pass.
+
+## Redraw figures without inference
+
+From the repository root, regenerate all plots and metrics from the reference
+scores (this does not rerun OpenMM or ProteinMPNN):
+
+```bash
+python examples/skempi_cyclic/report.py \
+  --references examples/skempi_cyclic/data/references.csv \
+  --results examples/skempi_cyclic/results_reference \
+  --output /tmp/pepddg-reference-report
+```
+
+Scatter panels keep targets separate. Experimental ΔΔG uses kcal/mol; the
+PepDDG rank score is dimensionless. Ranking-comparison axes use within-target
+percentiles, and the dashed diagonal denotes identical ranks. No pooled fit
+or statistical-equivalence claim is implied.
