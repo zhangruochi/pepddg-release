@@ -14,7 +14,7 @@ traceable run provenance. Use the same interface in a notebook, a shell script
 or an automated peptide-optimization workflow.
 
 [Quick start](#quick-start) · [Reproduce the examples](#reproduce-the-paper-targets) ·
-[Python API](#python-api) · [中文指南](docs/QUICKSTART.zh-CN.md) ·
+[Python API](#python-api) · [Agent guide](README.agents.md) · [中文指南](docs/QUICKSTART.zh-CN.md) ·
 [Commercial licensing](#license-and-commercial-use)
 
 ## Why PepDDG?

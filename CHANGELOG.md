@@ -2,6 +2,7 @@
 
 ## 0.1.2
 
+- Add Claude Code/Codex agent instructions, a practical agent guide and portable PepDDG skills.
 - Make backend examples and source provenance portable for community use.
 - Preserve the prediction interface, scientific protocol and licensing terms.
 
