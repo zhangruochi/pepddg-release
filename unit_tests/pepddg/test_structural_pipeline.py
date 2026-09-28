@@ -43,7 +43,7 @@ def test_structural_cohort_uses_raw_channels_and_records_provenance(tmp_path: Pa
 
     calls = []
 
-    def build(base, variant, output):
+    def build(base, variant, output, **kwargs):
         calls.append(("build", variant))
         return str(base)
 
@@ -94,7 +94,7 @@ def test_disulfide_cohort_requires_real_physics_integrity_records(tmp_path: Path
     spec = ComplexSpec(
         source, "I", ("E",), (MutationSpec("TI11A", "I", 11, "", "T", "A"),), "disulfide"
     )
-    monkeypatch.setattr(pipeline, "_build_variant_pdb", lambda base, variant, output: str(base))
+    monkeypatch.setattr(pipeline, "_build_variant_pdb", lambda base, variant, output, **kwargs: str(base))
     monkeypatch.setattr(pipeline, "_score_mpnn", lambda *a, **k: {"TI11A": (0.2, 0.4)})
     monkeypatch.setattr(pipeline, "_score_openmm", lambda *a, **k: {
         "dg_bind_kcal_mol_restarts": [0.0, 1.0, 2.0],
@@ -141,7 +141,7 @@ def test_interrupted_cohort_resumes_completed_mutations(tmp_path: Path, monkeypa
     first = _spec(tmp_path)
     second = MutationSpec("G5V", "B", 5, "", "G", "V")
     spec = replace(first, mutations=(first.mutations[0], second))
-    monkeypatch.setattr(pipeline, "_build_variant_pdb", lambda base, variant, output: str(base))
+    monkeypatch.setattr(pipeline, "_build_variant_pdb", lambda base, variant, output, **kwargs: str(base))
     monkeypatch.setattr(pipeline, "_score_mpnn", lambda *a, **k: {"G5A": (0.2, 0.4), "G5V": (0.3, 0.5)})
     calls = []
 
@@ -172,7 +172,7 @@ def test_changed_input_refuses_saved_partial_work(tmp_path: Path, monkeypatch) -
     import pepddg.structural_pipeline as pipeline
 
     spec = _spec(tmp_path)
-    monkeypatch.setattr(pipeline, "_build_variant_pdb", lambda base, variant, output: str(base))
+    monkeypatch.setattr(pipeline, "_build_variant_pdb", lambda base, variant, output, **kwargs: str(base))
     monkeypatch.setattr(pipeline, "_score_mpnn", lambda *a, **k: {"G5A": (0.2, 0.4)})
 
     def physics(*args, **kwargs):
@@ -195,7 +195,7 @@ def test_each_mutant_uses_its_own_paired_wt_protocol(tmp_path: Path, monkeypatch
                        for index, (name, delta) in enumerate((("N", 0.0), ("CA", 1.0), ("C", 2.0), ("O", 3.0))))
     pdb.write_text(pdb.read_text().replace("END\n", addition + "END\n"))
     spec = replace(first, mutations=(first.mutations[0], MutationSpec("A6V", "B", 6, "", "A", "V")))
-    monkeypatch.setattr(pipeline, "_build_variant_pdb", lambda base, variant, output: str(base))
+    monkeypatch.setattr(pipeline, "_build_variant_pdb", lambda base, variant, output, **kwargs: str(base))
     monkeypatch.setattr(pipeline, "_score_mpnn", lambda *a, **k: {"G5A": (0.2, 0.4), "A6V": (0.3, 0.5)})
     observed = []
 
@@ -215,7 +215,7 @@ def test_each_mutant_uses_its_own_paired_wt_protocol(tmp_path: Path, monkeypatch
 def test_final_publication_interruption_resumes_only_own_outputs(tmp_path: Path, monkeypatch) -> None:
     import pepddg.structural_pipeline as pipeline
 
-    monkeypatch.setattr(pipeline, "_build_variant_pdb", lambda base, variant, output: str(base))
+    monkeypatch.setattr(pipeline, "_build_variant_pdb", lambda base, variant, output, **kwargs: str(base))
     monkeypatch.setattr(pipeline, "_score_mpnn", lambda *a, **k: {"G5A": (0.2, 0.4)})
     calls = []
 
@@ -250,7 +250,7 @@ def test_final_publication_interruption_resumes_only_own_outputs(tmp_path: Path,
 def test_changed_producer_code_refuses_saved_partial_work(tmp_path: Path, monkeypatch) -> None:
     import pepddg.structural_pipeline as pipeline
 
-    monkeypatch.setattr(pipeline, "_build_variant_pdb", lambda base, variant, output: str(base))
+    monkeypatch.setattr(pipeline, "_build_variant_pdb", lambda base, variant, output, **kwargs: str(base))
     monkeypatch.setattr(pipeline, "_score_openmm", lambda *a, **k: (_ for _ in ()).throw(RuntimeError("interrupted")))
     output = tmp_path / "out"
     with pytest.raises(RuntimeError, match="interrupted"):

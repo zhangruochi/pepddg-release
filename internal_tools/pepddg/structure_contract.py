@@ -54,6 +54,7 @@ class ComplexValidation:
     closure_kind: str
     excluded_water_atoms: int
     disulfide_pairs: tuple[tuple[int, int], ...] = ()
+    terminal_caps: tuple[tuple[str, int], ...] = ()
 
 
 def _icode(value: str) -> str:
@@ -112,6 +113,7 @@ def validate_complex(spec: ComplexSpec) -> ComplexValidation:
     structure = gemmi.read_structure(str(path))
     if len(structure) != 1:
         raise ValueError("one coordinate model is required")
+    structure.merge_chain_parts()
     model = structure[0]
     chains = {chain.name: chain for chain in model}
     selected = (spec.peptide_chain,) + spec.receptor_chains
@@ -121,10 +123,14 @@ def validate_complex(spec: ComplexSpec) -> ComplexValidation:
 
     residues: dict[tuple[str, int, str], object] = {}
     excluded_water_atoms = 0
+    from .terminal_caps import CAP_HEAVY_ATOMS, validate_terminal_caps
+    terminal_caps = validate_terminal_caps(chains[spec.peptide_chain], frozenset(_ONE_LETTER))
     for chain_name in selected:
         for residue in chains[chain_name]:
             if residue.name in {"HOH", "WAT"} and residue.het_flag != "A":
                 excluded_water_atoms += len(residue)
+                continue
+            if chain_name == spec.peptide_chain and residue.name in CAP_HEAVY_ATOMS:
                 continue
             if residue.name not in _ONE_LETTER or residue.het_flag != "A":
                 raise UnsupportedChemistry(
@@ -142,7 +148,18 @@ def validate_complex(spec: ComplexSpec) -> ComplexValidation:
 
     declared_disulfides: set[tuple[int, int]] = set()
     for connection in structure.connections:
+        connection_chains = {connection.partner1.chain_name, connection.partner2.chain_name}
         if spec.peptide_chain not in {connection.partner1.chain_name, connection.partner2.chain_name}:
+            continue
+        allowed_cap_edges = set()
+        for name, number in terminal_caps:
+            if name == "ACE":
+                allowed_cap_edges.add(frozenset(((number,"C"),(number+1,"N"))))
+            else:
+                allowed_cap_edges.add(frozenset(((number-1,"C"),(number,"N"))))
+        edge = frozenset(((connection.partner1.res_id.seqid.num,connection.partner1.atom_name),
+                          (connection.partner2.res_id.seqid.num,connection.partner2.atom_name)))
+        if connection_chains == {spec.peptide_chain} and edge in allowed_cap_edges:
             continue
         if not (
             spec.closure_kind == "disulfide"
@@ -275,4 +292,5 @@ def validate_complex(spec: ComplexSpec) -> ComplexValidation:
         closure_kind=spec.closure_kind,
         excluded_water_atoms=excluded_water_atoms,
         disulfide_pairs=tuple(sorted(disulfide_pairs)),
+        terminal_caps=terminal_caps,
     )

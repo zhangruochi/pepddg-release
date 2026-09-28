@@ -16,6 +16,7 @@ def verify_disulfide_integrity(
     expected_pairs: tuple[tuple[int, int], ...],
     system: Any | None = None,
     stage: str,
+    expected_terminal_caps: tuple[tuple[str,int], ...] = (),
 ) -> dict[str, float]:
     """Check exact S–S topology, geometry, stereochemistry and force-field bonds."""
     from openmm import HarmonicBondForce, unit
@@ -75,6 +76,10 @@ def verify_disulfide_integrity(
         distances[f"{first}-{second}"] = distance
 
     for number, residue in residues.items():
+        if residue.name in {"ACE","NH2"}:
+            if not expected_terminal_caps:
+                raise ValueError(f"{stage}: undeclared peptide terminal cap")
+            continue
         if residue.name == "GLY":
             continue
         by_name = {atom.name: atom for atom in residue.atoms()}
@@ -118,4 +123,8 @@ def verify_disulfide_integrity(
                 bonded_indices.add(indices)
         if bonded_indices != expected_indices:
             raise ValueError(f"{stage}: force-field disulfide bond missing")
+    if expected_terminal_caps:
+        from .terminal_caps import verify_terminal_cap_integrity
+        verify_terminal_cap_integrity(topology,positions,peptide_chain=peptide_chain,
+                                      expected_caps=expected_terminal_caps,system=system,stage=stage)
     return distances
