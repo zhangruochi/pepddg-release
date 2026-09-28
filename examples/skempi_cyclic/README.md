@@ -30,6 +30,18 @@ this may take substantial time. With a compatible OpenMM CUDA build, set
 `PEPDDG_PLATFORM=CUDA`. `PEPDDG_CPU_THREADS` controls the CPU thread cap.
 Completed output folders can be resumed by rerunning the same command.
 
+For one target with automatic download and verification against the pinned
+official SKEMPI snapshot, the original acquisition helper remains available:
+
+```bash
+python examples/skempi_cyclic/run.py --target 1SMF --output /path/to/1SMF
+```
+
+It downloads the official CSV and cleaned PDB archive, checks their pinned
+hashes and the selected original archive members, then runs that target's
+complete cohort. `--verify-only` checks source/input identity without model
+computation.
+
 The output has one folder per target (`features.csv`, `scores.csv`,
 `provenance.json` and restartable `.pepddg-work/`), plus
 `report/target_metrics.csv` and `report/target_correlations.png`.
@@ -61,6 +73,11 @@ checked-in scores.
 The prepared coordinates, mutation lists, and reference rows are derived from
 the official [SKEMPI v2.0 download](https://life.bsc.es/pid/skempi2/database/index),
 whose database terms are [CC BY 4.0](https://life.bsc.es/pid/skempi2/info/terms).
+Please cite Jankauskaite et al., *Bioinformatics* 35, 462–469 (2019),
+[doi:10.1093/bioinformatics/bty635](https://doi.org/10.1093/bioinformatics/bty635).
+SKEMPI 2.0 © 2018 Barcelona Supercomputing Center; this repository modified
+the subset selection, numbering documentation, and cofactor-free preparation.
+No BSC endorsement is implied.
 The `references.csv` file contains experimental labels and archived paper
 scores for evaluation only; it must never be supplied to PepDDG inference.
 PepDDG code licensing is separate; see the repository [license scope](../../LICENSE_SCOPE.md).
