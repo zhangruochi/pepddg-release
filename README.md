@@ -1,148 +1,220 @@
 # PepDDG
 
-**A zero-shot, training-free predictor for peptide–protein binding ΔΔG that
-fuses three orthogonal information channels — physical perturbation, geometric
-environment, and evolutionary compatibility — by Borda rank aggregation.**
+### From a peptide–protein structure to a ranked mutation shortlist.
 
-This repository contains the full algorithm implementation, frozen evaluation
-bundles, and reproducibility scripts for the headline results of the
-accompanying anonymous submission. The manuscript itself is submitted
-separately and is **not** distributed in this repository.
+**NeurIPS 2026 · CLI + Python API · Reproducible structural examples**
 
-| Split | N (mut × targets) | PepDDG-ZS ρ (95% CI) | PepDDG-Cal ρ (95% CI) |
-|-------|------------------:|----------------------:|----------------------:|
-| Main common-coverage | 332 × 33 | **0.619** [0.519, 0.708] | **0.691** [0.612, 0.770] |
-| BPTI control DMS     | 456 × 2  | 0.771 | 0.712 |
-| OOD pooled DMS       | 745 × 4  | 0.235 | 0.235 |
+PepDDG helps researchers prioritize single amino-acid substitutions in a
+peptide bound to a protein. It combines **physical interaction energies,
+local structural context and ProteinMPNN sequence preferences** into a
+training-free, cohort-relative mutation ranking.
 
-PepDDG-ZS is the active zero-shot method; PepDDG-Cal is a calibrated ablation
-(weights frozen on a held-out split, no training step at evaluation time).
+Supply a complex and a mutation list; get raw features, ranked scores and
+traceable run provenance. Use the same interface in a notebook, a shell script
+or an automated peptide-optimization workflow.
 
----
+[Quick start](#quick-start) · [Reproduce the examples](#reproduce-the-paper-targets) ·
+[Python API](#python-api) · [中文指南](docs/QUICKSTART.zh-CN.md) ·
+[Commercial licensing](#license-and-commercial-use)
 
-## Repository layout
+## Why PepDDG?
 
-```
-internal_tools/pepddg/        Core algorithm package (importable as a Python module)
-  ├── configs/default.yaml    Default rank-fusion config (mode: zs)
-  ├── minimal_example/        Self-contained 2-minute smoke test
-  ├── test_fixtures/          Tiny synthetic structures and CSVs for tests
-  ├── pipeline.py             End-to-end CLI entry point
-  ├── feature_assembly.py     Channel merging
-  ├── physics_features.py     Physics rank-score extraction
-  ├── structural_features.py  Geometric feature derivation
-  ├── mpnn_features.py        ProteinMPNN log-likelihood handling
-  ├── scoring.py              Rank fusion (Borda)
-  ├── release_audit.py        SHA256 verification of released artifacts
-  └── ...
-research/pepddg_v5/
-  ├── results/                Frozen evaluation CSVs and paper number JSONs
-  │   ├── v19_sanitized_baseline/   ← per-split eval CSVs (main, BPTI, OOD)
-  │   └── zs_cal_neurips_release/   ← canonical headline numbers
-  ├── data/independent_validation/  BPTI + 3 OOD targets (CC-BY-4.0; see DATA_PROVENANCE.md)
-  ├── scripts/                Analysis, ablation, and statistical-test scripts
-  ├── README.md               Project-level overview
-  ├── RESULTS_SUMMARY.md      Mode evaluation summary
-  ├── NEGATIVE_RESULTS.md     Documented dead ends
-  └── LITERATURE_BASELINES.md Comparison protocol
-unit_tests/pepddg/
-  └── test_v23_token_mapping.py
-```
+- **Three complementary channels.** Inspect the physics, geometry and sequence evidence behind the final ranking.
+- **Structures or features.** Run the complete structure-to-score workflow, or score an existing raw-feature table.
+- **Restartable runs.** Completed mutation work survives interruptions; identical-input retries resume it.
+- **Examples you can inspect and rerun.** Prepared structures, exact mutation lists, reference outputs and plotting commands are included.
 
----
+**Read the score correctly:** lower is more favorable within the complete
+mutation cohort for one parent–target pair. PepDDG rank scores are dimensionless;
+they are not calibrated binding ΔΔG values or experimental affinities.
 
-## Quickstart
+## Quick start
 
-### Environment
+The complete pinned environment supports Linux x86-64 and Python 3.12:
 
 ```bash
+git clone https://github.com/zhangruochi/pepddg-release.git
+cd pepddg-release
 conda env create -f environment.yaml
 conda activate pepddg
+pepddg doctor --json
 ```
 
-The environment is intentionally lightweight: only NumPy / SciPy / Pandas /
-Matplotlib / Seaborn / statsmodels / freesasa / gemmi / openpyxl / pytest are
-required. **No GPU, OpenMM, or PyRosetta is needed for the released scoring
-pipeline** — the heavy feature-extraction steps were run upstream and their
-outputs are frozen in `research/pepddg_v5/results/v19_sanitized_baseline/`.
+The environment installs OpenMM, PDBFixer, CPU PyTorch, the bundled
+ProteinMPNN checkpoint and PepDDG. The structural workflow defaults to CPU.
+CUDA requires a compatible OpenMM CUDA installation; the supplied environment
+is the CPU setup. `doctor` checks dependencies and checkpoint presence;
+it does not run a prediction or certify a working OpenMM platform.
 
-### (a) Smoke test — ~2 minutes, CPU only
+Try the lightweight scoring interface immediately:
 
 ```bash
-bash internal_tools/pepddg/minimal_example/run.sh
+pepddg score-features \
+  --input examples/raw_features.csv \
+  --output /tmp/pepddg-scores.csv
 ```
 
-Reads 10 synthetic mutations, runs the rank-fusion scorer, and writes
-`internal_tools/pepddg/minimal_example/output/scored.csv`.
+For feature scoring alone, `python -m pip install .` works in an existing
+Python 3.12 environment. Use the conda environment for the structural workflow.
 
-### (b) Reproduce the headline numbers — ~5 minutes, CPU only
+## Rank mutations in your own complex
 
-The CLI re-derives the ZS rank-fusion column from the frozen channel scores in
-`main_eval_v19.csv`:
+Prepare a peptide–receptor complex and a CSV of single substitutions:
 
-```bash
-# Re-derive PepDDG-ZS from channel scores (mode is configured in default.yaml)
-python -m internal_tools.pepddg \
-  --config internal_tools/pepddg/configs/default.yaml \
-  --input-csv research/pepddg_v5/results/v19_sanitized_baseline/main_eval_v19.csv \
-  --output-csv /tmp/pepddg_main_zs.csv
+```csv
+mutation,chain,resnum,icode,wt,mut
+TI11A,I,11,,T,A
 ```
 
-The PepDDG-Cal column (`rankscore_3view_v19_strict3`) is the result of an
-offline calibration step and is shipped pre-computed in `main_eval_v19.csv`.
-Verify both rank-correlations against the canonical paper numbers (target:
-ZS ≈ 0.619, Cal ≈ 0.691; tolerance ±0.005):
+Use the chain IDs and residue numbers from **your actual structure**. Supply
+all mutations you want to compare together; ranks depend on that cohort.
 
 ```bash
-python - <<'PY'
-import json
+pepddg score-structures \
+  --structure /path/to/complex.pdb \
+  --peptide-chain I --receptor-chain F \
+  --mutations /path/to/mutations.csv \
+  --target my_target --parent-id WT \
+  --output /path/to/pepddg-results
+```
+
+The default uses seven paired WT/mutant OpenMM restarts per substitution;
+CPU runs can take substantial time. Reissue the identical command to resume
+an interrupted run. Successful runs produce:
+
+| Output | What you get |
+|---|---|
+| `scores.csv` | Mutation identities, channel ranks and the final PepDDG score |
+| `features.csv` | Complete raw physical, structural and sequence channels |
+| `provenance.json` | Input and checkpoint hashes, seed and scoring protocol |
+| `.pepddg-work/` | Restartable per-mutation intermediates |
+
+Supported chemistry includes standard linear peptides and the validated
+disulfide topology and exact ACE/NH2 cap graphs in the supplied examples.
+Head-to-tail rings, noncanonical residues, linkers and other covalent
+chemistries need additional support. Read the [structure and input guide](docs/STRUCTURES.md)
+before applying PepDDG to a new molecular system.
+
+## Reproduce the paper targets
+
+After installation, **one command** runs all four supplied SKEMPI v2.0
+cohorts from their prepared structures and generates metrics and figures:
+
+```bash
+bash examples/skempi_cyclic/run.sh results/skempi-cyclic
+```
+
+With a compatible CUDA installation, prefix this command with
+`PEPDDG_PLATFORM=CUDA`. This is real feature generation and inference;
+experimental labels are read only afterward by the report script.
+
+The checked reference run completed **35 observations, all three channels,
+and seven paired restarts**. Results passed the predefined small-cohort
+consistency criteria:
+
+| System | Chemistry | Mutations | Paper ρ | Fresh ρ |
+|---|---|---:|---:|---:|
+| 1SMF | Disulfide peptide | 5 | 0.900 | 0.900 |
+| 3EQS | Linear PMI control | 10 | 0.842 | 0.697 |
+| 3EQY | Linear PMI control | 11 | 0.718 | 0.836 |
+| 5XCO | Disulfide peptide, ACE/NH2 caps | 9 | 0.854 | 0.912 |
+
+ρ is the per-target Spearman correlation with experimental ΔΔG. The paper
+groups these four systems as cyclic targets; the deposited 3EQS/3EQY peptides
+are linear controls, and the example preserves that chemistry.
+
+![Fresh PepDDG scores versus experimental ΔΔG for four separate SKEMPI cohorts](examples/skempi_cyclic/results_reference/report/experiment_scatter.png)
+
+For the two true disulfide systems, the mean absolute correlation drift is
+**0.029** and mean paper-to-fresh score-order agreement is **0.925**.
+These small cohorts support an engineering consistency check, not statistical
+equivalence. Prepared inputs omit receptor cofactors and waters and differ
+from unavailable historical predicted coordinates.
+
+Explore the [complete reproduction guide](examples/skempi_cyclic/README.md)
+for source attribution, topology details, acceptance criteria, raw outputs,
+[paper-to-fresh comparisons](examples/skempi_cyclic/results_reference/report/target_correlations.png)
+and [ranking scatter plots](examples/skempi_cyclic/results_reference/report/ranking_scatter.png).
+Figures are available as high-resolution PNGs and editable SVGs.
+
+To redraw the figures and recompute metrics from the checked reference scores
+without running the structural models:
+
+```bash
+python examples/skempi_cyclic/report.py \
+  --references examples/skempi_cyclic/data/references.csv \
+  --results examples/skempi_cyclic/results_reference \
+  --output /tmp/pepddg-reference-report
+```
+
+## Python API
+
+Score an existing raw-feature cohort in a notebook:
+
+```python
 import pandas as pd
-from scipy.stats import spearmanr
+from pepddg import score_features
 
-gold_path = "research/pepddg_v5/results/zs_cal_neurips_release/paper_numbers_zs_cal.json"
-gold = json.load(open(gold_path))
-
-zs_re = pd.read_csv("/tmp/pepddg_main_zs.csv")
-src   = pd.read_csv("research/pepddg_v5/results/v19_sanitized_baseline/main_eval_v19.csv")
-
-zs_rho,  _ = spearmanr(zs_re["ddg_exp"], zs_re["rankscore_pepddg_zs"])
-cal_rho, _ = spearmanr(src["ddg_exp"],   src["rankscore_3view_v19_strict3"])
-
-print(f"PepDDG-ZS  reproduced rho = {zs_rho:.4f}  (target ~0.619)")
-print(f"PepDDG-Cal cached     rho = {cal_rho:.4f} (target ~0.691)")
-PY
+features = pd.read_csv("examples/raw_features.csv")
+result = score_features(features)
+print(result.table)
 ```
 
-### (c) Audit released artifacts — ~1 minute
+For structural inference, use `ComplexSpec`, `MutationSpec` and
+`run_structural_cohort`; see the [complete Python example](docs/STRUCTURES.md#commands).
+The raw-feature interface requires `target`, `parent_id`, `mutation`,
+`ddg_xint_iface`, `ddg_bind_proxy`, `n_iface_contacts_8a`, `n_neighbors_10a`,
+`mpnn_neg_llr_complex` and `mpnn_ddg_bind`. It rejects mixed cohorts,
+duplicates, missing/nonfinite values, experimental labels, precomputed ranks
+and extra columns.
 
-Verifies SHA256 hashes of every shipped CSV and JSON manifest:
+## Reproducibility beyond the examples
+
+The historical frozen benchmark has **332 mutations across 33 targets** and
+a recorded pooled PepDDG-ZS Spearman correlation near **0.619**. Replay its
+feature scoring and metric calculation with:
 
 ```bash
-python -m internal_tools.pepddg.release_audit --repo-root . --json
+python -m pepddg.frozen_benchmark --repo-root . --output /tmp/pepddg-frozen-replay
 ```
 
-Status `"PASS"` indicates all hashes match the recorded release manifest.
+This is a frozen-feature regression, separate from fresh structural inference.
+The rebuttal common-coverage cohort contains 331 mutations; it is a different
+analysis. See the [benchmark protocol](docs/BENCHMARK.md) and
+[data provenance](research/pepddg_v5/data/DATA_PROVENANCE.md).
 
-### (d) Run unit tests
+## License and commercial use
 
-```bash
-pytest unit_tests/pepddg -v
-```
+New packaging and structural orchestration use
+[PolyForm Noncommercial 1.0.0](LICENSE): **noncommercial research is welcome;
+commercial use, including company-internal R&D, requires separate written
+authorization**. Contact **<zrc720@gmail.com>** for commercial licensing.
 
----
+Historical MIT grants and third-party rights remain in force for their
+covered materials, including the bundled ProteinMPNN code and checkpoint.
+Read [license scope](LICENSE_SCOPE.md) and [third-party notices](THIRD_PARTY_NOTICES.md)
+for the combined edition. SKEMPI-derived example data have separate attribution
+and licensing, documented in the [example guide](examples/skempi_cyclic/README.md).
 
 ## Citation
 
-This work is currently under anonymous review. Citation details will be added
-upon publication.
+**PepDDG: Peptide–Protein Binding ΔΔG Prediction via Information Channel
+Decomposition.** Accepted to **NeurIPS 2026**.
 
----
+The final author list and proceedings identifier await verification;
+[CITATION.cff](CITATION.cff) will be updated with authenticated metadata.
+Do not use the manuscript's anonymous placeholder as a post-acceptance author list.
 
-## License
+## Contribute
 
-- **Code** (everything under `internal_tools/`, `research/pepddg_v5/scripts/`,
-  `unit_tests/`): MIT — see `LICENSE`.
-- **Data**: see `research/pepddg_v5/data/DATA_PROVENANCE.md` for per-file
-  source, license, and attribution. The released benchmarks are derived from
-  SKEMPI v2 (CC-BY-4.0) and the BPTI deep mutational scan of Heyne et al. 2021
-  (CC-BY-4.0); please cite those original works alongside this one.
+See [CONTRIBUTING.md](CONTRIBUTING.md) and [CHANGELOG.md](CHANGELOG.md).
+Research development stays separate; community releases receive deliberate,
+versioned updates. To check the release:
+
+```bash
+pytest -q unit_tests/pepddg
+python -m pepddg.release_audit --repo-root . --json
+```
+
+The artifact audit checks historical frozen-file identity; it does not replace
+fresh structural validation.

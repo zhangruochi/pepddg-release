@@ -1,20 +1,18 @@
 name: pepddg
 channels:
   - conda-forge
-  - bioconda
 dependencies:
-  - python=3.12
-  - numpy>=1.26
-  - scipy>=1.11
-  - pandas>=2.1
-  - pyyaml>=6.0
-  - matplotlib>=3.8
-  - seaborn>=0.13
-  - statsmodels>=0.14
-  - tqdm>=4.66
-  - openpyxl>=3.1            # for reading bpti_dms_heyne2021.xlsx
-  - pytest>=7.4
+  - python=3.12.7
+  - numpy=1.26.4
+  - scipy=1.16.3
+  - matplotlib=3.10.8
+  - pandas=2.2.3
+  - pyyaml=6.0.3
+  - pytest=9.0.1
+  - gemmi=0.7.4
+  - openmm=8.2.0
+  - pdbfixer=1.12
+  - pytorch=2.7.1=*cpu*
   - pip>=23
   - pip:
-      - freesasa>=2.2
-      - gemmi>=0.6
+      - -e .

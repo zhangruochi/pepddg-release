@@ -1,0 +1,30 @@
+{
+  "files_sha256": {
+    "1SMF/complex.pdb": "35dbaca8d126a6a2f376dcb9d8b00ee04163ea6521e2fd8a2862e9c0cf0f0ea5",
+    "1SMF/mutations.csv": "1d288d5f7fd9c299418c507e2e334065cb156fef7052036ac448ebc457c28a47",
+    "3EQS/complex.pdb": "fdc71a78229bec60f66ab726dee4418a67fd689fd1c322eeafd8762f836ddff0",
+    "3EQS/mutations.csv": "15122ce112e945cfc86b581b0c8f0d9d9a9b1e1d1ae86db55d5dc964fb68fcb5",
+    "3EQY/complex.pdb": "ba75d812e485f617b163acadabf0c6b73d29fdc738ddd8405f5026d9b3d29562",
+    "3EQY/mutations.csv": "5aef2c211c1f679f2df1ecd8313123a39b3c648558247b857cdd0a3f3aaf5111",
+    "5XCO/complex.pdb": "5262187af401dbb90cb532dacdfc5b98c32cd8278f8c38316eb37025f49227c8",
+    "5XCO/mutations.csv": "c1ed26d2fc221430ca3a710a6c31c920a047c97d6f07d1a4318bd921e66d3f39",
+    "references.csv": "81aadb506906d6b7567586c10e5de9005f0d67e28156d434dd3c106b56f7d32a"
+  },
+  "observations": {
+    "1SMF": 5,
+    "3EQS": 10,
+    "3EQY": 11,
+    "5XCO": 9
+  },
+  "official_csv_sha256": "76f8e60d09eaa4f05fb265063886859a86895c0b2fb225e31fe82928a883972d",
+  "official_pdb_archive_sha256": "82418131a3864aa8484ea6ec300e58f9bc0349e21530f83f7ce336b41589a95a",
+  "schema": "pepddg-skempi-cyclic-example/v1",
+  "source": "SKEMPI v2.0 official CSV and cleaned PDB archive",
+  "source_license": "CC BY 4.0",
+  "source_urls": [
+    "https://life.bsc.es/pid/skempi2/database/index",
+    "https://life.bsc.es/pid/skempi2/info/terms"
+  ],
+  "upstream_release_commit": "2b0b4c7eeaf9d6cf8e1428c5618f360199bf47dd",
+  "working_subset_manifest_sha256": "6e11581637910325c0d382b79270b5fb751d7fb4d373e00f5157f53e0400fb0c"
+}

@@ -7,7 +7,7 @@ Allows agents and shell users to run:
 
 from __future__ import annotations
 
-from internal_tools.pepddg.run_pepddg import main
+from .run_pepddg import main
 
 
 if __name__ == "__main__":

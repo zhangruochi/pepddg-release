@@ -1,0 +1,30 @@
+name: Fresh CPU install
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+      - pepddg-release-final-20260927
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fresh-cpu-install:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mamba-org/setup-micromamba@v3
+        with:
+          environment-file: environment.yaml
+          init-shell: bash
+      - name: Verify installed CLI and frozen benchmark
+        shell: micromamba-shell {0}
+        run: |
+          pepddg doctor --json
+          pepddg score-features --input examples/raw_features.csv --output "$RUNNER_TEMP/pepddg-scores.csv"
+          python -m pepddg.frozen_benchmark --repo-root . --output "$RUNNER_TEMP/pepddg-frozen-replay"
+          pytest -q unit_tests/pepddg

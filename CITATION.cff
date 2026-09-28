@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: >-
+  If you use PepDDG, cite the NeurIPS 2026 paper by its official author list
+  when the final proceedings record is available. This file identifies the
+  software project while individual authorship remains unverified here.
+title: "PepDDG: Peptide–Protein Binding ΔΔG Prediction via Information Channel Decomposition"
+type: software
+authors:
+  - name: "PepDDG project team"
+version: 0.1.0
+repository-code: "https://github.com/zhangruochi/pepddg-release"

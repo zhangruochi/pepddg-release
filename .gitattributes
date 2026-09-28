@@ -1,0 +1,2 @@
+# Preserve byte-pinned fixed-column PDB records, including element-field padding.
+examples/skempi_cyclic/*/*.pdb whitespace=-blank-at-eol
