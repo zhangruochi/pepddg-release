@@ -1,6 +1,7 @@
 include CITATION.cff CHANGELOG.md CONTRIBUTING.md THIRD_PARTY_NOTICES.md environment.yaml
 recursive-include docs *.md
 recursive-include examples *.csv
+recursive-include examples/skempi_cyclic *.pdb *.json *.png *.py *.sh *.md
 include research/pepddg_v5/data/DATA_PROVENANCE.md
 include research/pepddg_v5/results/v19_sanitized_baseline/main_eval_v19.csv
 include research/pepddg_v5/results/v19_sanitized_baseline/bpti_eval_v19.csv

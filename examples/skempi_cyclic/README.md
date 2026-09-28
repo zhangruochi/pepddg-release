@@ -1,28 +1,74 @@
-# Official SKEMPI examples
+# SKEMPI v2.0 paper cyclic-target reproduction
 
-Activate the repository's `pepddg` environment, then run from the repository root:
+This example runs the 35 single substitutions associated with the four cyclic
+targets used in the PepDDG paper: 1SMF (5 rows), 3EQS (10), 3EQY (11), and 5XCO
+(9). It runs the normal PepDDG structural workflow for every target, writes the
+three raw channels and cohort-relative scores, and creates a per-target metric
+table plus a comparison chart. Experimental labels are loaded only by the
+report script, after inference has completed.
+
+The deposited chemistry is preserved. 1SMF and 5XCO have disulfide closures;
+5XCO also retains its deposited ACE and NH2 terminal caps. 3EQS and 3EQY are
+linear PMI controls even though the paper groups them under “cyclic”. Receptor
+calcium, GAI/PO4, GDP/EDO, and waters are omitted by the prepared inputs. The
+cofactor-free structures are a reproducible approximation, not the deposited
+cofactor-bound systems. Results are a small-cohort consistency check and do not
+establish statistical equivalence or experimental affinity.
+
+## Run
+
+Create the supported environment from the repository root, then run:
 
 ```bash
-python examples/skempi_cyclic/run.py --target 1SMF --output /tmp/pepddg-1SMF
+conda env create -f environment.yaml
+conda activate pepddg
+bash examples/skempi_cyclic/run.sh /path/to/output
 ```
 
-The command downloads the official CSV and cleaned PDB archive, verifies the pinned hashes and selected original members, verifies the bundled prepared inputs, then calls the installed structural CLI. Add `--platform CUDA` when your OpenMM CUDA environment is working. `--verify-only` checks acquisition/input identity without model computation. The default seven paired restarts can take substantial time on CPU. Repeat the identical command to resume completed mutation checkpoints.
+The default execution uses CPU and seven paired OpenMM restarts per mutation;
+this may take substantial time. With a compatible OpenMM CUDA build, set
+`PEPDDG_PLATFORM=CUDA`. `PEPDDG_CPU_THREADS` controls the CPU thread cap.
+Completed output folders can be resumed by rerunning the same command.
 
-| Target | Mutations | Actual peptide chemistry |
-|---|---:|---|
-| 1SMF | 5 | Cys1–Cys9 disulfide, peptide chain I |
-| 5XCO | 9 | Cys5–Cys15 disulfide, ACE/NH2 termini, peptide chain B |
-| 3EQS | 10 | Linear PMI, peptide chain B |
-| 3EQY | 11 | Linear PMI, peptide chain C |
+The output has one folder per target (`features.csv`, `scores.csv`,
+`provenance.json` and restartable `.pepddg-work/`), plus
+`report/target_metrics.csv` and `report/target_correlations.png`.
 
-The paper's CYCLIC annotation includes all35; 3EQS/3EQY are linear controls. The actual disulfide subgroup has14 observations. Never add a terminal bond to these structures. Disulfide support is a preview until the separate fresh-computation acceptance report passes. Head-to-tail, linker and noncanonical chemistry remain unsupported by this example.
+## Reference smoke result
 
-Prepared coordinates are derived from the official cleaned PDBs. Where alternate conformers exist, preparation selects a complete whole-residue conformer by highest mean occupancy, with lexical tie-breaking; the manifest records selected/discarded labels and atom identities and both source/prepared hashes. The included inputs are frozen to this exact snapshot. Changed upstream data or edited coordinates fail verification, rather than silently defining a different benchmark.
+The checked reference run completed all 35 observations with seven paired
+restarts and all three channels. Every target met the per-target consistency
+limits, and both aggregate cohorts passed. This is a computational consistency
+check, not a measurement:
 
-This example uses a cofactor-free protein receptor and implicit solvent. Preparation explicitly omits deposited waters and receptor CA/GAI/PO4/GDP/EDO, recording every omitted atom in the manifest; unsupported or attached chemistry refuses. It retains all peptide atoms, the 5XCO ACE/NH2 caps and both disulfides. Cap atom records are ordered with their peptide without changing coordinates. Removing GDP changes the modeled receptor state; this is an explicit approximation, not an exact reproduction of the experimental complex.
+| Target | n | Fresh rho | Paper rho | Absolute drift | Score-order agreement |
+|---|---:|---:|---:|---:|---:|
+| 1SMF | 5 | 0.900 | 0.900 | 0.000 | 1.000 |
+| 3EQS | 10 | 0.697 | 0.842 | 0.145 | 0.867 |
+| 3EQY | 11 | 0.836 | 0.718 | 0.118 | 0.891 |
+| 5XCO | 9 | 0.912 | 0.854 | 0.059 | 0.850 |
 
-Each target is one complete ranking cohort; lower final score is more favorable within that cohort. A target's score is not an absolute binding energy and target-relative scores cannot be pooled to claim the paper's global correlation. No experimental labels or archived scores enter this example. The engineering acceptance report separately compares fresh keyed results against historical within-target orders and reports all failures. Full332/33 and original predicted-coordinate reproduction are not asserted.
+![Fresh and archived paper-score correlations by target](results_reference/report/target_correlations.png)
 
-## Data attribution
+The paper-defined-four group has mean absolute rho drift 0.081 and score-order
+agreement 0.902. The true disulfide pair (1SMF and 5XCO) has mean drift 0.029
+and agreement 0.925. Raw result tables and provenance for this reference run
+are in [`results_reference/`](results_reference/), with source/wheel/input/output
+hashes in [`run_manifest.json`](results_reference/run_manifest.json); rerun the
+command above to recompute them from structures rather than relying on these
+checked-in scores.
 
-SKEMPI 2.0: Jankauskaite et al., Bioinformatics35,462–469(2019), https://doi.org/10.1093/bioinformatics/bty635. Official source: https://life.bsc.es/pid/skempi2/database/index. These SKEMPI-derived examples and prepared coordinates are **CC BY4.0**, copyright2018Barcelona Supercomputing Center (BSC), https://creativecommons.org/licenses/by/4.0/. This repository modified the subset selection, chain/numbering documentation and alternate-conformer preparation; no BSC endorsement is claimed. PepDDG's commercial-use authorization requirement does not restrict independent rights in these source data.
+The prepared coordinates, mutation lists, and reference rows are derived from
+the official [SKEMPI v2.0 download](https://life.bsc.es/pid/skempi2/database/index),
+whose database terms are [CC BY 4.0](https://life.bsc.es/pid/skempi2/info/terms).
+The `references.csv` file contains experimental labels and archived paper
+scores for evaluation only; it must never be supplied to PepDDG inference.
+PepDDG code licensing is separate; see the repository [license scope](../../LICENSE_SCOPE.md).
+
+Expected rough consistency criteria for this smoke are per-target absolute
+Spearman-rho drift ≤0.20 and score-order agreement ≥0.70. Across the four paper
+targets, the mean drift should be ≤0.10 and mean agreement ≥0.90. The separate
+true-disulfide pair (1SMF and 5XCO) uses the same aggregate criteria. These
+limits were set for this engineering smoke; the small cohorts are not
+equivalence intervals. `report.py` reports metrics but does not silently
+convert failed limits into a pass.

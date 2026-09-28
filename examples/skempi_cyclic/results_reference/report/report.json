@@ -1,0 +1,62 @@
+{
+  "data_manifest_sha256": "21dd9ce4046d5b999bc711cf3b57cd297e9e7ca46f2869ddf5d759c57f1b5927",
+  "groups": {
+    "paper_defined_four": {
+      "mean_absolute_rho_drift": 0.0805535705623161,
+      "mean_paper_score_agreement": 0.9018939393939394,
+      "pass": true,
+      "targets": [
+        "1SMF",
+        "3EQS",
+        "3EQY",
+        "5XCO"
+      ]
+    },
+    "true_disulfide_pair": {
+      "mean_absolute_rho_drift": 0.02928895930645037,
+      "mean_paper_score_agreement": 0.9249999999999998,
+      "pass": true,
+      "targets": [
+        "1SMF",
+        "5XCO"
+      ]
+    }
+  },
+  "interpretation": "Small-cohort engineering consistency check; not statistical equivalence or measured affinity.",
+  "metrics_pass": true,
+  "schema": "pepddg-cyclic-smoke-report/v1",
+  "targets": [
+    {
+      "absolute_rho_drift": 0.0,
+      "fresh_experimental_rho": 0.8999999999999998,
+      "n": 5,
+      "paper_experimental_rho": 0.8999999999999998,
+      "paper_score_agreement_rho": 0.9999999999999999,
+      "target": "1SMF"
+    },
+    {
+      "absolute_rho_drift": 0.1454545454545454,
+      "fresh_experimental_rho": 0.6969696969696969,
+      "n": 10,
+      "paper_experimental_rho": 0.8424242424242423,
+      "paper_score_agreement_rho": 0.8666666666666665,
+      "target": "3EQS"
+    },
+    {
+      "absolute_rho_drift": 0.11818181818181828,
+      "fresh_experimental_rho": 0.8363636363636365,
+      "n": 11,
+      "paper_experimental_rho": 0.7181818181818183,
+      "paper_score_agreement_rho": 0.8909090909090911,
+      "target": "3EQY"
+    },
+    {
+      "absolute_rho_drift": 0.05857791861290074,
+      "fresh_experimental_rho": 0.9121418755437382,
+      "n": 9,
+      "paper_experimental_rho": 0.8535639569308374,
+      "paper_score_agreement_rho": 0.8499999999999999,
+      "target": "5XCO"
+    }
+  ]
+}

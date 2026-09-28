@@ -35,27 +35,17 @@ physical system, so report the selected pair with any result.
 Peptide residue numbers must be consecutive, without insertion codes; a gap
 would make the structural and ProteinMPNN position maps disagree.
 
-The validated structural path currently supports **linear peptides only**.
-This draft also has an **unqualified disulfide preview** for standard L-amino-acid
-peptides with one receptor chain and substitutions away from bonded cysteines.
-It checks the declared S–S pairs, peptide stereochemistry, force-field bonds
-and every minimized restart. A full real-channel run and independent scientific
-review are still pending; do not use preview results to rank cyclic designs yet.
-Head-to-tail, side-chain and linker cyclization, other covalent connections,
-modified amino acids, other terminal modifications, ligands and alternate atom locations remain unsupported.
-Explicit or suspected unsupported closures are rejected where detectable;
-absence of a rejection is not proof that unannotated chemistry is supported.
-For cyclic peptide optimization, use the feature-table interface only if all
-channels were produced by a separately validated cyclic protocol, and retain
-that protocol's provenance.
-
-The [official SKEMPI examples](../examples/skempi_cyclic/README.md) separately
-prepare explicitly declared cofactor-free receptor inputs. They retain 5XCO's
-acetyl and primary-amide caps. Cap identities, actual topology/force-field bonds,
-amide geometry and every restart's integrity are recorded in checkpoints and
-provenance. ProteinMPNN models the amino-acid backbone; cap effects enter the
-physical channels. This preparation does not imply support for arbitrary
-receptor ligands or peptide modifications.
+The general structural path supports linear peptides plus the explicitly
+validated disulfide peptide topology and the exact ACE/NH2 terminal cap graphs
+used by the included 5XCO reproduction example. Disulfide connectivity,
+geometry and force-field bonds are checked; cap atom identities, amide
+geometry and force-field bonds are checked across preparation and restarts.
+This narrow support does not extend to head-to-tail cyclization, linkers,
+modified amino acids, ligands or other covalent chemistries. Explicit or
+suspected unsupported closures are rejected where detectable; absence of a
+rejection is not proof that unannotated chemistry is supported. See the
+[paper cyclic-target smoke](../examples/skempi_cyclic/README.md) for exact
+supported structures, cofactor-free preparation and the reproduction command.
 
 ## Commands
 

@@ -68,14 +68,13 @@ pepddg score-structures \
 The default is seven paired OpenMM restarts for each mutation, with WT and
 mutant using the same mutation-site restraint exclusion. This can be
 slow on CPU. This command is a **workflow template**, not the paper's
-full SKEMPI cohort or a validated prediction for cyclic peptides. The
-single-receptor-chain input contract and currently unsupported chemistries are
-documented in [structural workflow](docs/STRUCTURES.md). Successful runs write
+full SKEMPI cohort. The release also includes an end-to-end 35-observation
+reproduction smoke for the four paper cyclic targets, with the exact supported
+disulfide and terminal-cap chemistry documented in
+[structural workflow](docs/STRUCTURES.md) and runnable from
+[`examples/skempi_cyclic`](examples/skempi_cyclic/README.md). Successful runs write
 `features.csv`, `scores.csv` and `provenance.json` only after every requested
 mutation has all required channels.
-An experimental disulfide-closure path exists on this draft branch but has not
-yet passed a complete physical run or independent scientific review; it is not
-a validated cyclic-peptide ranking method.
 
 Python users can call `pepddg.score_features(frame)` or
 `pepddg.run_structural_cohort(spec, target=..., parent_id=...,
