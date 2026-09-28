@@ -16,6 +16,8 @@ Require a WT peptide–receptor PDB/mmCIF complex, explicit peptide/receptor cha
 IDs and mutation tokens such as `T2A`. Numbers are structure residue IDs. A list
 means independent single mutants, not combined multi-site mutants. Inspect WT
 identity; let the strict validator reject mismatches or unsupported chemistry.
+Unannotated unsupported covalent closures may evade detection; inspect the
+chemistry and bond records rather than treating successful parsing as support.
 A peptide sequence or isolated peptide cannot substitute for the bound complex.
 
 In a source clone, create/activate the `pepddg` environment from environment.yaml.

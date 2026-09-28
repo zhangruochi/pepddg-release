@@ -5,7 +5,8 @@ and reproduction commands. Claude Code and Codex share these instructions.
 
 - Use `pepddg.predict(wt_structure, mutations, peptide_chain=..., receptor_chain=..., output_dir=...)`
   for WT-complex inputs. Obtain explicit chain IDs and structure residue numbers;
-  never guess them or manufacture prediction values.
+  never guess them or manufacture prediction values. Check the molecular chemistry
+  explicitly: unannotated unsupported closures may evade automatic detection.
 - Use an isolated PepDDG environment and inspect supported chemistry before a long
   run. Keep the standard seven-restart protocol unless the requested experiment
   explicitly specifies another setting. Dependency checks are not prediction proof.

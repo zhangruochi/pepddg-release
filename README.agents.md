@@ -79,7 +79,9 @@ mutants; combined multi-site mutants are not supported by this interface.
 Numbers are PDB/mmCIF residue IDs, not positions in a renumbered sequence.
 
 The API recognizes supported linear/disulfide topology and validates WT identities.
-It refuses unsupported chemistry. Default structural inference uses seven paired
+Known unsupported chemistry is refused, but unannotated covalent closures may
+evade detection. Inspect the supplied chemistry and bond records; a successful
+parse alone does not establish topology support. Default structural inference uses seven paired
 WT/mutant restarts on CPU and may take substantial time. A supported CUDA setup
 can use `platform="CUDA"`; the supplied conda environment is the CPU environment.
 
