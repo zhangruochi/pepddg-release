@@ -56,5 +56,18 @@
       "structure_sha256": "5262187af401dbb90cb532dacdfc5b98c32cd8278f8c38316eb37025f49227c8"
     }
   },
+  "visualization": {
+    "files_sha256": {
+      "report/experiment_scatter.png": "cf920d2b4fd134a2a88bdf74e5d3027607a2104437820bba91ed3333ca22f91f",
+      "report/experiment_scatter.svg": "049ece3fc32a58d4f0629c2fce68b35e76457967c428b5fdb23ed2ac78bedd77",
+      "report/ranking_scatter.png": "96249143cb8f6ff7682eba4ef61f42d9df8d7b3af2182fabdeb505108eb27738",
+      "report/ranking_scatter.svg": "7e4a8890d96f442fee4e7896259f91561abab9709180f069c3994a4d4cd21e48",
+      "report/target_correlations.png": "ceaeee33e4bdd7008110db00187e34ef843a884756049ab8c1b4692fa44d85d6",
+      "report/target_correlations.svg": "868698c37137e118976be38b7defc4bb657e139bb61734947a44c841ace77368"
+    },
+    "generator": "examples/skempi_cyclic/report.py",
+    "generator_sha256": "33523345edbd58ffc930bc8cba8e7d66d7ac7f47e70eb043a8f073cd1bb89d37",
+    "inference_rerun": false
+  },
   "wheel_sha256": "226a7786ea4e92b5bd989c4aebbea048ecf60cdd36a556af8a8429ca574c8fbb"
 }
