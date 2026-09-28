@@ -73,7 +73,46 @@ OpenMM and ProteinMPNN random generators. `--platform CPU` is the default;
 `--cpu-threads` from 1 to 4 based on actual allocation. On CPU, seven
 restarts for a full cohort may be expensive.
 
-Python API:
+## Python API
+
+The recommended entrypoint is `predict(wt_structure, mutations, *,
+peptide_chain, receptor_chain, ...)`. `wt_structure` is the bound WT complex,
+not an isolated peptide. `mutations` can be a string such as `T11A` or an
+ordered list/tuple of independent single substitutions. Positions use actual
+structure numbering; combined substitutions and noncanonical edits are refused.
+
+```python
+from pepddg import predict
+
+predictions = predict(
+    "/path/to/wt-complex.pdb", ["T11A", "Y7F"],
+    peptide_chain="I", receptor_chain="E",
+    output_dir="/path/to/persistent-results",
+)
+print(predictions.sort_values("rankscore_pepddg_zs"))
+print(predictions.attrs["provenance"])
+```
+
+The result is a pandas DataFrame. Raw channels are available for single or
+multiple substitutions. All relative `rankscore_*` columns are missing for a
+singleton cohort; the `rank_available` flag in its metadata is false. This
+also applies to singleton `score_features` and structural CLI outputs, so a
+meaningless zero cannot be mistaken for a favorable prediction. For two or
+more candidates, the existing cohort-rank calculation is unchanged.
+
+`closure="auto"` first applies the existing linear validator and retries the
+supported disulfide validator only for its specific SG-SG closure signal.
+Other unsupported chemistry is never accepted by that retry. Explicit
+`closure="linear"` or `"disulfide"` enforces that topology.
+
+Optional arguments are `target` (defaults to the structure file stem),
+`parent_id="WT"`, `platform="CPU"`, `n_restarts=7`, `seed=20260302` and
+`cpu_threads=2`. If `output_dir` is omitted, a retained temporary directory is
+reported in `predictions.attrs["output_dir"]`. On an execution failure, the
+exception note records the checkpoint location. Resuming requires the same
+inputs, labels, topology, protocol, weights and producer version.
+
+Advanced object-based API:
 
 ```python
 from pepddg import ComplexSpec, MutationSpec, run_structural_cohort

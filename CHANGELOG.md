@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.1
+
+- Add `pepddg.predict(wt_structure, mutations, ...)`, returning a DataFrame directly for one mutation or an ordered mutation series.
+- Recognize validated linear/disulfide topology without requiring mutation manifests or input objects.
+- Keep raw channels for single candidates and mark their relative ranks unavailable; preserve the multi-candidate scoring recipe.
+- Retain automatic output/checkpoint directories and expose provenance in DataFrame metadata.
+
 ## 0.1.0
 
 - Installable `pepddg` Python package and command-line interface with a pinned conda environment.
