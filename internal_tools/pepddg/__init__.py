@@ -16,6 +16,7 @@ from typing import Any
 
 _EXPORT_MODULES = {
     # Config + pipeline
+    "predict": "prediction",
     "PepDDGConfig": "config",
     "V19SanitizedWeights": "config",
     "load_config": "config",
@@ -67,6 +68,7 @@ def __getattr__(name: str) -> Any:
     return value
 
 __all__ = [
+    "predict",
     # Config + pipeline
     "PepDDGConfig",
     "V19SanitizedWeights",
