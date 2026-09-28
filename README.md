@@ -34,6 +34,8 @@ distributed through conda-forge. See [installation and input details](docs/STRUC
 `pepddg doctor` checks dependency and bundled-checkpoint presence without
 running a model; presence alone does not establish a working OpenMM platform.
 For a concise Chinese walkthrough, see [中文快速入门](docs/QUICKSTART.zh-CN.md).
+A downloadable official SKEMPI example with complete mutation cohorts is
+available in [examples/skempi_cyclic](examples/skempi_cyclic/README.md).
 
 ## Use
 

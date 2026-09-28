@@ -1,0 +1,3231 @@
+{
+  "official_sources": {
+    "SKEMPI2_PDBs.tgz": {
+      "sha256": "82418131a3864aa8484ea6ec300e58f9bc0349e21530f83f7ce336b41589a95a",
+      "url": "https://life.bsc.es/pid/skempi2/database/download/SKEMPI2_PDBs.tgz"
+    },
+    "skempi_v2.csv": {
+      "sha256": "76f8e60d09eaa4f05fb265063886859a86895c0b2fb225e31fe82928a883972d",
+      "url": "https://life.bsc.es/pid/skempi2/database/download/skempi_v2.csv"
+    }
+  },
+  "schema": "pepddg-official-cyclic-example/v1",
+  "subset_manifest_sha256": "3d3fcd77cef49dbf0e410c879acbf7b64f2f32efda95b31eef397a371feec1d1",
+  "targets": {
+    "1SMF": {
+      "altloc_preparation": {
+        "discarded_atom_count": 0,
+        "policy": "highest-occupancy",
+        "prepared_sha256": "54399efe726d018014229fe30634663c647372623f158a31e7fd503950049fd5",
+        "residues": [],
+        "retained_atom_count": 0,
+        "source_sha256": "54399efe726d018014229fe30634663c647372623f158a31e7fd503950049fd5"
+      },
+      "closure_kind": "disulfide",
+      "disulfide_bonds": [
+        {
+          "chain": "I",
+          "residue1": "1",
+          "residue2": "9",
+          "sg_distance_angstrom": 2.0332951089303224
+        }
+      ],
+      "mutations": "1SMF/mutations.csv",
+      "n_mutations": 5,
+      "paper_annotation_matches_graph": true,
+      "parent_id": "1SMF_E_I",
+      "pdb": "1SMF/prepared_structure.pdb",
+      "peptide_chain": "I",
+      "prepared_files": {
+        "1SMF/mutations.csv": "1d288d5f7fd9c299418c507e2e334065cb156fef7052036ac448ebc457c28a47",
+        "1SMF/prepared_structure.pdb": "54399efe726d018014229fe30634663c647372623f158a31e7fd503950049fd5"
+      },
+      "receptor_chain": "E",
+      "source_members": {
+        "PDBs/1SMF.mapping": "bb48c13a004e252271c5183f83804e2f5b797034a53bda614460654b9d3d27df",
+        "PDBs/1SMF.pdb": "54399efe726d018014229fe30634663c647372623f158a31e7fd503950049fd5"
+      }
+    },
+    "3EQS": {
+      "altloc_preparation": {
+        "discarded_atom_count": 89,
+        "policy": "highest-occupancy",
+        "prepared_sha256": "8bf29698e05c5930f68bdb8c3b4e91bf625c3f6b44a97f56a687368713a5ffde",
+        "residues": [
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "59"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "63"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "65"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD1",
+                "serial": "67"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD2",
+                "serial": "69"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.7,
+              "B": 0.3
+            },
+            "resnum": "8",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "57"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "58"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "60"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "61"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "62"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "64"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD1",
+                "serial": "66"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD2",
+                "serial": "68"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "105"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "109"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "111"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD1",
+                "serial": "113"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD2",
+                "serial": "115"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.7,
+              "B": 0.3
+            },
+            "resnum": "13",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "103"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "104"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "106"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "107"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "108"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "110"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD1",
+                "serial": "112"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD2",
+                "serial": "114"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "182"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "186"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "188"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD1",
+                "serial": "190"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD2",
+                "serial": "192"
+              },
+              {
+                "altloc": "B",
+                "atom": "CE1",
+                "serial": "194"
+              },
+              {
+                "altloc": "B",
+                "atom": "CE2",
+                "serial": "196"
+              },
+              {
+                "altloc": "B",
+                "atom": "CZ",
+                "serial": "198"
+              },
+              {
+                "altloc": "B",
+                "atom": "OH",
+                "serial": "200"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.7,
+              "B": 0.3
+            },
+            "resnum": "23",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "180"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "181"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "183"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "184"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "185"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "187"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD1",
+                "serial": "189"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD2",
+                "serial": "191"
+              },
+              {
+                "altloc": "A",
+                "atom": "CE1",
+                "serial": "193"
+              },
+              {
+                "altloc": "A",
+                "atom": "CE2",
+                "serial": "195"
+              },
+              {
+                "altloc": "A",
+                "atom": "CZ",
+                "serial": "197"
+              },
+              {
+                "altloc": "A",
+                "atom": "OH",
+                "serial": "199"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "210"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "214"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "216"
+              },
+              {
+                "altloc": "B",
+                "atom": "SD",
+                "serial": "218"
+              },
+              {
+                "altloc": "B",
+                "atom": "CE",
+                "serial": "220"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.7,
+              "B": 0.3
+            },
+            "resnum": "25",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "208"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "209"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "211"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "212"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "213"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "215"
+              },
+              {
+                "altloc": "A",
+                "atom": "SD",
+                "serial": "217"
+              },
+              {
+                "altloc": "A",
+                "atom": "CE",
+                "serial": "219"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "223"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "227"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "229"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD",
+                "serial": "231"
+              },
+              {
+                "altloc": "B",
+                "atom": "CE",
+                "serial": "233"
+              },
+              {
+                "altloc": "B",
+                "atom": "NZ",
+                "serial": "235"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.5,
+              "B": 0.5
+            },
+            "resnum": "26",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "221"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "222"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "224"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "225"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "226"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "228"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD",
+                "serial": "230"
+              },
+              {
+                "altloc": "A",
+                "atom": "CE",
+                "serial": "232"
+              },
+              {
+                "altloc": "A",
+                "atom": "NZ",
+                "serial": "234"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "238"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "242"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "244"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD",
+                "serial": "246"
+              },
+              {
+                "altloc": "B",
+                "atom": "OE1",
+                "serial": "248"
+              },
+              {
+                "altloc": "B",
+                "atom": "OE2",
+                "serial": "250"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.5,
+              "B": 0.5
+            },
+            "resnum": "27",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "236"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "237"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "239"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "240"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "241"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "243"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD",
+                "serial": "245"
+              },
+              {
+                "altloc": "A",
+                "atom": "OE1",
+                "serial": "247"
+              },
+              {
+                "altloc": "A",
+                "atom": "OE2",
+                "serial": "249"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "291"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "295"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "297"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD1",
+                "serial": "299"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD2",
+                "serial": "301"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.5,
+              "B": 0.5
+            },
+            "resnum": "32",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "289"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "290"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "292"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "293"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "294"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "296"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD1",
+                "serial": "298"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD2",
+                "serial": "300"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "N",
+                "serial": "336"
+              },
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "338"
+              },
+              {
+                "altloc": "B",
+                "atom": "C",
+                "serial": "340"
+              },
+              {
+                "altloc": "B",
+                "atom": "O",
+                "serial": "342"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "344"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "346"
+              },
+              {
+                "altloc": "B",
+                "atom": "SD",
+                "serial": "348"
+              },
+              {
+                "altloc": "B",
+                "atom": "CE",
+                "serial": "350"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.5,
+              "B": 0.5
+            },
+            "resnum": "37",
+            "retained_atom_identities": [
+              {
+                "altloc": "A",
+                "atom": "N",
+                "serial": "335"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "337"
+              },
+              {
+                "altloc": "A",
+                "atom": "C",
+                "serial": "339"
+              },
+              {
+                "altloc": "A",
+                "atom": "O",
+                "serial": "341"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "343"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "345"
+              },
+              {
+                "altloc": "A",
+                "atom": "SD",
+                "serial": "347"
+              },
+              {
+                "altloc": "A",
+                "atom": "CE",
+                "serial": "349"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "369"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "373"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "375"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD",
+                "serial": "377"
+              },
+              {
+                "altloc": "B",
+                "atom": "NE",
+                "serial": "379"
+              },
+              {
+                "altloc": "B",
+                "atom": "CZ",
+                "serial": "381"
+              },
+              {
+                "altloc": "B",
+                "atom": "NH1",
+                "serial": "383"
+              },
+              {
+                "altloc": "B",
+                "atom": "NH2",
+                "serial": "385"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.5,
+              "B": 0.5
+            },
+            "resnum": "40",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "367"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "368"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "370"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "371"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "372"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "374"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD",
+                "serial": "376"
+              },
+              {
+                "altloc": "A",
+                "atom": "NE",
+                "serial": "378"
+              },
+              {
+                "altloc": "A",
+                "atom": "CZ",
+                "serial": "380"
+              },
+              {
+                "altloc": "A",
+                "atom": "NH1",
+                "serial": "382"
+              },
+              {
+                "altloc": "A",
+                "atom": "NH2",
+                "serial": "384"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "416"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "420"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "422"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD",
+                "serial": "424"
+              },
+              {
+                "altloc": "B",
+                "atom": "OE1",
+                "serial": "426"
+              },
+              {
+                "altloc": "B",
+                "atom": "OE2",
+                "serial": "428"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.7000000000000001,
+              "B": 0.3
+            },
+            "resnum": "44",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "414"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "415"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "417"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "418"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "419"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "421"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD",
+                "serial": "423"
+              },
+              {
+                "altloc": "A",
+                "atom": "OE1",
+                "serial": "425"
+              },
+              {
+                "altloc": "A",
+                "atom": "OE2",
+                "serial": "427"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "431"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "435"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "437"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD",
+                "serial": "439"
+              },
+              {
+                "altloc": "B",
+                "atom": "CE",
+                "serial": "441"
+              },
+              {
+                "altloc": "B",
+                "atom": "NZ",
+                "serial": "443"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.5,
+              "B": 0.5
+            },
+            "resnum": "45",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "429"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "430"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "432"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "433"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "434"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "436"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD",
+                "serial": "438"
+              },
+              {
+                "altloc": "A",
+                "atom": "CE",
+                "serial": "440"
+              },
+              {
+                "altloc": "A",
+                "atom": "NZ",
+                "serial": "442"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "513"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "517"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "519"
+              },
+              {
+                "altloc": "B",
+                "atom": "OD1",
+                "serial": "521"
+              },
+              {
+                "altloc": "B",
+                "atom": "ND2",
+                "serial": "523"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.7,
+              "B": 0.3
+            },
+            "resnum": "54",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "511"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "512"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "514"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "515"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "516"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "518"
+              },
+              {
+                "altloc": "A",
+                "atom": "OD1",
+                "serial": "520"
+              },
+              {
+                "altloc": "A",
+                "atom": "ND2",
+                "serial": "522"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "534"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "538"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "540"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD1",
+                "serial": "542"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD2",
+                "serial": "544"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.7,
+              "B": 0.3
+            },
+            "resnum": "56",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "532"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "533"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "535"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "536"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "537"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "539"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD1",
+                "serial": "541"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD2",
+                "serial": "543"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "567"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "571"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "573"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD1",
+                "serial": "575"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD2",
+                "serial": "577"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.5,
+              "B": 0.5
+            },
+            "resnum": "60",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "565"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "566"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "568"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "569"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "570"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "572"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD1",
+                "serial": "574"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD2",
+                "serial": "576"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "714"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "718"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "720"
+              },
+              {
+                "altloc": "B",
+                "atom": "SD",
+                "serial": "722"
+              },
+              {
+                "altloc": "B",
+                "atom": "CE",
+                "serial": "724"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.5,
+              "B": 0.5
+            },
+            "resnum": "77",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "712"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "713"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "715"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "716"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "717"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "719"
+              },
+              {
+                "altloc": "A",
+                "atom": "SD",
+                "serial": "721"
+              },
+              {
+                "altloc": "A",
+                "atom": "CE",
+                "serial": "723"
+              }
+            ],
+            "selected_label": "A"
+          }
+        ],
+        "retained_atom_count": 131,
+        "source_sha256": "dc8f0fd9c627c4a346cf6fd18cadd2648896ad35bb2bac12c4795a97c9814ae7"
+      },
+      "closure_kind": "linear",
+      "disulfide_bonds": [],
+      "mutations": "3EQS/mutations.csv",
+      "n_mutations": 10,
+      "paper_annotation_matches_graph": false,
+      "parent_id": "3EQS_A_B",
+      "pdb": "3EQS/prepared_structure.pdb",
+      "peptide_chain": "B",
+      "prepared_files": {
+        "3EQS/mutations.csv": "15122ce112e945cfc86b581b0c8f0d9d9a9b1e1d1ae86db55d5dc964fb68fcb5",
+        "3EQS/prepared_structure.pdb": "8bf29698e05c5930f68bdb8c3b4e91bf625c3f6b44a97f56a687368713a5ffde"
+      },
+      "receptor_chain": "A",
+      "source_members": {
+        "PDBs/3EQS.mapping": "b174f2b8cab2774de77133d388538cf570560335953eb25503a20d2778800fb4",
+        "PDBs/3EQS.pdb": "dc8f0fd9c627c4a346cf6fd18cadd2648896ad35bb2bac12c4795a97c9814ae7"
+      }
+    },
+    "3EQY": {
+      "altloc_preparation": {
+        "discarded_atom_count": 50,
+        "policy": "highest-occupancy",
+        "prepared_sha256": "c6ae4d411e25f2289022f1eaf5aa9f983e4b017f0c19c9c5c2aa9a410bb81eeb",
+        "residues": [
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "3"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "7"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "9"
+              },
+              {
+                "altloc": "B",
+                "atom": "OD1",
+                "serial": "11"
+              },
+              {
+                "altloc": "B",
+                "atom": "ND2",
+                "serial": "13"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.7,
+              "B": 0.3
+            },
+            "resnum": "1",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "1"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "2"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "4"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "5"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "6"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "8"
+              },
+              {
+                "altloc": "A",
+                "atom": "OD1",
+                "serial": "10"
+              },
+              {
+                "altloc": "A",
+                "atom": "ND2",
+                "serial": "12"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "266"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "270"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "272"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD",
+                "serial": "274"
+              },
+              {
+                "altloc": "B",
+                "atom": "OE1",
+                "serial": "276"
+              },
+              {
+                "altloc": "B",
+                "atom": "NE2",
+                "serial": "278"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.5,
+              "B": 0.5
+            },
+            "resnum": "34",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "264"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "265"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "267"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "268"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "269"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "271"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD",
+                "serial": "273"
+              },
+              {
+                "altloc": "A",
+                "atom": "OE1",
+                "serial": "275"
+              },
+              {
+                "altloc": "A",
+                "atom": "NE2",
+                "serial": "277"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "301"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "305"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "307"
+              },
+              {
+                "altloc": "B",
+                "atom": "SD",
+                "serial": "309"
+              },
+              {
+                "altloc": "B",
+                "atom": "CE",
+                "serial": "311"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.8,
+              "B": 0.2
+            },
+            "resnum": "37",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "299"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "300"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "302"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "303"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "304"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "306"
+              },
+              {
+                "altloc": "A",
+                "atom": "SD",
+                "serial": "308"
+              },
+              {
+                "altloc": "A",
+                "atom": "CE",
+                "serial": "310"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "314"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "318"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG1",
+                "serial": "320"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG2",
+                "serial": "322"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.5,
+              "B": 0.5
+            },
+            "resnum": "38",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "312"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "313"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "315"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "316"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "317"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG1",
+                "serial": "319"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG2",
+                "serial": "321"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "334"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "338"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "340"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD",
+                "serial": "342"
+              },
+              {
+                "altloc": "B",
+                "atom": "OE1",
+                "serial": "344"
+              },
+              {
+                "altloc": "B",
+                "atom": "NE2",
+                "serial": "346"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.5,
+              "B": 0.5
+            },
+            "resnum": "40",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "332"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "333"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "335"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "336"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "337"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "339"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD",
+                "serial": "341"
+              },
+              {
+                "altloc": "A",
+                "atom": "OE1",
+                "serial": "343"
+              },
+              {
+                "altloc": "A",
+                "atom": "NE2",
+                "serial": "345"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "489"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "493"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "495"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD1",
+                "serial": "497"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD2",
+                "serial": "499"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.5,
+              "B": 0.5
+            },
+            "resnum": "60",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "487"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "488"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "490"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "491"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "492"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "494"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD1",
+                "serial": "496"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD2",
+                "serial": "498"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "525"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "529"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "531"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD",
+                "serial": "533"
+              },
+              {
+                "altloc": "B",
+                "atom": "OE1",
+                "serial": "535"
+              },
+              {
+                "altloc": "B",
+                "atom": "NE2",
+                "serial": "537"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.7000000000000001,
+              "B": 0.3
+            },
+            "resnum": "64",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "523"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "524"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "526"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "527"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "528"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "530"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD",
+                "serial": "532"
+              },
+              {
+                "altloc": "A",
+                "atom": "OE1",
+                "serial": "534"
+              },
+              {
+                "altloc": "A",
+                "atom": "NE2",
+                "serial": "536"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "579"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "583"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "585"
+              },
+              {
+                "altloc": "B",
+                "atom": "OD1",
+                "serial": "587"
+              },
+              {
+                "altloc": "B",
+                "atom": "OD2",
+                "serial": "589"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.5,
+              "B": 0.5
+            },
+            "resnum": "70",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "577"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "578"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "580"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "581"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "582"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "584"
+              },
+              {
+                "altloc": "A",
+                "atom": "OD1",
+                "serial": "586"
+              },
+              {
+                "altloc": "A",
+                "atom": "OD2",
+                "serial": "588"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "599"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "603"
+              },
+              {
+                "altloc": "B",
+                "atom": "OG",
+                "serial": "605"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.5,
+              "B": 0.5
+            },
+            "resnum": "72",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "597"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "598"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "600"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "601"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "602"
+              },
+              {
+                "altloc": "A",
+                "atom": "OG",
+                "serial": "604"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "615"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "619"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "621"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD1",
+                "serial": "623"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD2",
+                "serial": "625"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.7,
+              "B": 0.3
+            },
+            "resnum": "74",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "613"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "614"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "616"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "617"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "618"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "620"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD1",
+                "serial": "622"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD2",
+                "serial": "624"
+              }
+            ],
+            "selected_label": "A"
+          }
+        ],
+        "retained_atom_count": 80,
+        "source_sha256": "864da4ef90ac6e147f6c25288805136b6ebf27892864f30c55d3a65e4ffcb835"
+      },
+      "closure_kind": "linear",
+      "disulfide_bonds": [],
+      "mutations": "3EQY/mutations.csv",
+      "n_mutations": 11,
+      "paper_annotation_matches_graph": false,
+      "parent_id": "3EQY_A_C",
+      "pdb": "3EQY/prepared_structure.pdb",
+      "peptide_chain": "C",
+      "prepared_files": {
+        "3EQY/mutations.csv": "5aef2c211c1f679f2df1ecd8313123a39b3c648558247b857cdd0a3f3aaf5111",
+        "3EQY/prepared_structure.pdb": "c6ae4d411e25f2289022f1eaf5aa9f983e4b017f0c19c9c5c2aa9a410bb81eeb"
+      },
+      "receptor_chain": "A",
+      "source_members": {
+        "PDBs/3EQY.mapping": "6c4ed90845c96b1a952def53754567b9d26965ac3fc50ba0e27c4bbb9e0f8274",
+        "PDBs/3EQY.pdb": "864da4ef90ac6e147f6c25288805136b6ebf27892864f30c55d3a65e4ffcb835"
+      }
+    },
+    "5XCO": {
+      "altloc_preparation": {
+        "discarded_atom_count": 70,
+        "policy": "highest-occupancy",
+        "prepared_sha256": "7f8509f00b13ff61b7135c8074f59d36ccbdc437ce85e69ff8e863f24ee329cd",
+        "residues": [
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "9"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "13"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "15"
+              },
+              {
+                "altloc": "B",
+                "atom": "SD",
+                "serial": "17"
+              },
+              {
+                "altloc": "B",
+                "atom": "CE",
+                "serial": "19"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.5,
+              "B": 0.5
+            },
+            "resnum": "2",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "7"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "8"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "10"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "11"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "12"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "14"
+              },
+              {
+                "altloc": "A",
+                "atom": "SD",
+                "serial": "16"
+              },
+              {
+                "altloc": "A",
+                "atom": "CE",
+                "serial": "18"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "197"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "201"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "203"
+              },
+              {
+                "altloc": "B",
+                "atom": "OD1",
+                "serial": "205"
+              },
+              {
+                "altloc": "B",
+                "atom": "ND2",
+                "serial": "207"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.5,
+              "B": 0.5
+            },
+            "resnum": "27",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "195"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "196"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "198"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "199"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "200"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "202"
+              },
+              {
+                "altloc": "A",
+                "atom": "OD1",
+                "serial": "204"
+              },
+              {
+                "altloc": "A",
+                "atom": "ND2",
+                "serial": "206"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "352"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "356"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "358"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD",
+                "serial": "360"
+              },
+              {
+                "altloc": "B",
+                "atom": "OE1",
+                "serial": "362"
+              },
+              {
+                "altloc": "B",
+                "atom": "NE2",
+                "serial": "364"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.5,
+              "B": 0.5
+            },
+            "resnum": "44",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "350"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "351"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "353"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "354"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "355"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "357"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD",
+                "serial": "359"
+              },
+              {
+                "altloc": "A",
+                "atom": "OE1",
+                "serial": "361"
+              },
+              {
+                "altloc": "A",
+                "atom": "NE2",
+                "serial": "363"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "401"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "405"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "407"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD",
+                "serial": "409"
+              },
+              {
+                "altloc": "B",
+                "atom": "OE1",
+                "serial": "411"
+              },
+              {
+                "altloc": "B",
+                "atom": "OE2",
+                "serial": "413"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.5,
+              "B": 0.5
+            },
+            "resnum": "50",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "399"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "400"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "402"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "403"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "404"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "406"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD",
+                "serial": "408"
+              },
+              {
+                "altloc": "A",
+                "atom": "OE1",
+                "serial": "410"
+              },
+              {
+                "altloc": "A",
+                "atom": "OE2",
+                "serial": "412"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "445"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "449"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "451"
+              },
+              {
+                "altloc": "B",
+                "atom": "OD1",
+                "serial": "453"
+              },
+              {
+                "altloc": "B",
+                "atom": "OD2",
+                "serial": "455"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.5,
+              "B": 0.5
+            },
+            "resnum": "55",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "443"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "444"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "446"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "447"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "448"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "450"
+              },
+              {
+                "altloc": "A",
+                "atom": "OD1",
+                "serial": "452"
+              },
+              {
+                "altloc": "A",
+                "atom": "OD2",
+                "serial": "454"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "837"
+              },
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "838"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "842"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "843"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "845"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "846"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD",
+                "serial": "848"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD",
+                "serial": "849"
+              },
+              {
+                "altloc": "A",
+                "atom": "CE",
+                "serial": "851"
+              },
+              {
+                "altloc": "B",
+                "atom": "CE",
+                "serial": "852"
+              },
+              {
+                "altloc": "A",
+                "atom": "NZ",
+                "serial": "854"
+              },
+              {
+                "altloc": "B",
+                "atom": "NZ",
+                "serial": "855"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.25,
+              "B": 0.25,
+              "C": 0.5
+            },
+            "resnum": "102",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "836"
+              },
+              {
+                "altloc": "C",
+                "atom": "CA",
+                "serial": "839"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "840"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "841"
+              },
+              {
+                "altloc": "C",
+                "atom": "CB",
+                "serial": "844"
+              },
+              {
+                "altloc": "C",
+                "atom": "CG",
+                "serial": "847"
+              },
+              {
+                "altloc": "C",
+                "atom": "CD",
+                "serial": "850"
+              },
+              {
+                "altloc": "C",
+                "atom": "CE",
+                "serial": "853"
+              },
+              {
+                "altloc": "C",
+                "atom": "NZ",
+                "serial": "856"
+              }
+            ],
+            "selected_label": "C"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "931"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "935"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "937"
+              },
+              {
+                "altloc": "B",
+                "atom": "SD",
+                "serial": "939"
+              },
+              {
+                "altloc": "B",
+                "atom": "CE",
+                "serial": "941"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.5,
+              "B": 0.5
+            },
+            "resnum": "112",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "929"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "930"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "932"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "933"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "934"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "936"
+              },
+              {
+                "altloc": "A",
+                "atom": "SD",
+                "serial": "938"
+              },
+              {
+                "altloc": "A",
+                "atom": "CE",
+                "serial": "940"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "1071"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "1075"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "1077"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD",
+                "serial": "1079"
+              },
+              {
+                "altloc": "B",
+                "atom": "OE1",
+                "serial": "1081"
+              },
+              {
+                "altloc": "B",
+                "atom": "NE2",
+                "serial": "1083"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.5,
+              "B": 0.5
+            },
+            "resnum": "130",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "1069"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "1070"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "1072"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "1073"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "1074"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "1076"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD",
+                "serial": "1078"
+              },
+              {
+                "altloc": "A",
+                "atom": "OE1",
+                "serial": "1080"
+              },
+              {
+                "altloc": "A",
+                "atom": "NE2",
+                "serial": "1082"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "1231"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "1235"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "1237"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD",
+                "serial": "1239"
+              },
+              {
+                "altloc": "B",
+                "atom": "NE",
+                "serial": "1241"
+              },
+              {
+                "altloc": "B",
+                "atom": "CZ",
+                "serial": "1243"
+              },
+              {
+                "altloc": "B",
+                "atom": "NH1",
+                "serial": "1245"
+              },
+              {
+                "altloc": "B",
+                "atom": "NH2",
+                "serial": "1247"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.7,
+              "B": 0.3
+            },
+            "resnum": "150",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "1229"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "1230"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "1232"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "1233"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "1234"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "1236"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD",
+                "serial": "1238"
+              },
+              {
+                "altloc": "A",
+                "atom": "NE",
+                "serial": "1240"
+              },
+              {
+                "altloc": "A",
+                "atom": "CZ",
+                "serial": "1242"
+              },
+              {
+                "altloc": "A",
+                "atom": "NH1",
+                "serial": "1244"
+              },
+              {
+                "altloc": "A",
+                "atom": "NH2",
+                "serial": "1246"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "1278"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "1282"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "1284"
+              },
+              {
+                "altloc": "B",
+                "atom": "OD1",
+                "serial": "1286"
+              },
+              {
+                "altloc": "B",
+                "atom": "OD2",
+                "serial": "1288"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.5,
+              "B": 0.5
+            },
+            "resnum": "155",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "1276"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "1277"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "1279"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "1280"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "1281"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "1283"
+              },
+              {
+                "altloc": "A",
+                "atom": "OD1",
+                "serial": "1285"
+              },
+              {
+                "altloc": "A",
+                "atom": "OD2",
+                "serial": "1287"
+              }
+            ],
+            "selected_label": "A"
+          },
+          {
+            "chain": "A",
+            "discarded_atom_identities": [
+              {
+                "altloc": "B",
+                "atom": "CA",
+                "serial": "1389"
+              },
+              {
+                "altloc": "B",
+                "atom": "CB",
+                "serial": "1393"
+              },
+              {
+                "altloc": "B",
+                "atom": "CG",
+                "serial": "1395"
+              },
+              {
+                "altloc": "B",
+                "atom": "ND1",
+                "serial": "1397"
+              },
+              {
+                "altloc": "B",
+                "atom": "CD2",
+                "serial": "1399"
+              },
+              {
+                "altloc": "B",
+                "atom": "CE1",
+                "serial": "1401"
+              },
+              {
+                "altloc": "B",
+                "atom": "NE2",
+                "serial": "1403"
+              }
+            ],
+            "icode": "",
+            "mean_occupancy_by_label": {
+              "A": 0.5,
+              "B": 0.5
+            },
+            "resnum": "167",
+            "retained_atom_identities": [
+              {
+                "altloc": " ",
+                "atom": "N",
+                "serial": "1387"
+              },
+              {
+                "altloc": "A",
+                "atom": "CA",
+                "serial": "1388"
+              },
+              {
+                "altloc": " ",
+                "atom": "C",
+                "serial": "1390"
+              },
+              {
+                "altloc": " ",
+                "atom": "O",
+                "serial": "1391"
+              },
+              {
+                "altloc": "A",
+                "atom": "CB",
+                "serial": "1392"
+              },
+              {
+                "altloc": "A",
+                "atom": "CG",
+                "serial": "1394"
+              },
+              {
+                "altloc": "A",
+                "atom": "ND1",
+                "serial": "1396"
+              },
+              {
+                "altloc": "A",
+                "atom": "CD2",
+                "serial": "1398"
+              },
+              {
+                "altloc": "A",
+                "atom": "CE1",
+                "serial": "1400"
+              },
+              {
+                "altloc": "A",
+                "atom": "NE2",
+                "serial": "1402"
+              }
+            ],
+            "selected_label": "A"
+          }
+        ],
+        "retained_atom_count": 97,
+        "source_sha256": "9a4976984439275c8afacbee20b9f0e74a45fa400afdadd32d9e7d79309e8be5"
+      },
+      "closure_kind": "disulfide",
+      "disulfide_bonds": [
+        {
+          "chain": "B",
+          "residue1": "5",
+          "residue2": "15",
+          "sg_distance_angstrom": 2.0731729305583753
+        }
+      ],
+      "mutations": "5XCO/mutations.csv",
+      "n_mutations": 9,
+      "paper_annotation_matches_graph": true,
+      "parent_id": "5XCO_A_B",
+      "pdb": "5XCO/prepared_structure.pdb",
+      "peptide_chain": "B",
+      "prepared_files": {
+        "5XCO/mutations.csv": "c1ed26d2fc221430ca3a710a6c31c920a047c97d6f07d1a4318bd921e66d3f39",
+        "5XCO/prepared_structure.pdb": "7f8509f00b13ff61b7135c8074f59d36ccbdc437ce85e69ff8e863f24ee329cd"
+      },
+      "receptor_chain": "A",
+      "source_members": {
+        "PDBs/5XCO.mapping": "78af084aa85e8b5a730c5d62ccd80ded72b96f2eb378e411d042603d20e5221a",
+        "PDBs/5XCO.pdb": "9a4976984439275c8afacbee20b9f0e74a45fa400afdadd32d9e7d79309e8be5"
+      }
+    }
+  }
+}
