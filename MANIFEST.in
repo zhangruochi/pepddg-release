@@ -9,3 +9,6 @@ include research/pepddg_v5/results/v19_sanitized_baseline/ood_eval_v19.csv
 include research/pepddg_v5/results/zs_cal_neurips_release/paper_numbers_zs_cal.json
 include research/pepddg_v5/results/zs_cal_neurips_release/release_manifest_zs_cal.json
 include research/pepddg_v5/results/v19_release_manifest.json
+recursive-include research/pepddg_v5/results *.json
+include research/pepddg_v5/data/independent_validation/scoring_input/1CBW.pdb
+include research/pepddg_v5/data/independent_validation/scoring_input/3OTJ.pdb

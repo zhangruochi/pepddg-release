@@ -3,8 +3,8 @@
   "metrics_report_sha256": "8a8c98ec1c9f13ed69c0ffc317e932d26f605639da7d67c985d370df2d44eaee",
   "pepddg_release_commit": "2b0b4c7eeaf9d6cf8e1428c5618f360199bf47dd",
   "proteinmpnn_checkpoint_sha256": "c9cb4a671d79604111231f8dbfc7c590e06f1197453b7a6854ac6661a642f5bd",
-  "runtime_evidence_bundle_nfs": "/data1/nfs/tasks/pepddg-cyclic-smoke-20260928/runtime-evidence-v1.json",
   "runtime_evidence_bundle_sha256": "bceba1b1e77009b59a35035ec8cdc6f6591f601cd136205c7c20674bb7db4a43",
+  "runtime_evidence_note": "Full restart sidecars are not distributed in this repository. Their archived bundle SHA256 is retained for traceability; public per-target provenance and raw channels are included.",
   "schema": "pepddg-cyclic-reference-run/v1",
   "target_runs": {
     "1SMF": {
