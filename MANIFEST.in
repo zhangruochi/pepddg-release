@@ -12,3 +12,7 @@ include research/pepddg_v5/results/v19_release_manifest.json
 recursive-include research/pepddg_v5/results *.json
 include research/pepddg_v5/data/independent_validation/scoring_input/1CBW.pdb
 include research/pepddg_v5/data/independent_validation/scoring_input/3OTJ.pdb
+
+include README.agents.md AGENTS.md CLAUDE.md
+recursive-include .agents/skills *.md
+recursive-include .claude/skills *.md

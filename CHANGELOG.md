@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2
+
+- Add Claude Code/Codex agent instructions, a practical agent guide and portable PepDDG skills.
+- Make backend examples and source provenance portable for community use.
+- Preserve the prediction interface, scientific protocol and licensing terms.
+
 ## 0.1.1
 
 - Add `pepddg.predict(wt_structure, mutations, ...)`, returning a DataFrame directly for one mutation or an ordered mutation series.
