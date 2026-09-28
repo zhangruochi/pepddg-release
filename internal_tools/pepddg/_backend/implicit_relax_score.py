@@ -589,6 +589,9 @@ def compute_binding_energy_implicit(
     force_field: str = "amber14-all.xml",
     solute_dielectric: float = 1.0,
     linker: Optional[str] = None,
+    expected_disulfide_pairs: Optional[Sequence[Tuple[int, int]]] = None,
+    preserve_terminal_caps: bool = False,
+    expected_terminal_caps: Optional[Sequence[Tuple[str,int]]] = None,
 ) -> Dict[str, Any]:
     """
     Fast implicit-solvent binding energy proxy:
@@ -714,7 +717,13 @@ def compute_binding_energy_implicit(
             # can detect (and clearly report) the case where it deletes an entire
             # interface partner.
             _chains_before = {str(ch.id) for ch in fixer.topology.chains()}
-            fixer.removeHeterogens(keepWater=False)
+            if preserve_terminal_caps:
+                if not expected_terminal_caps:
+                    raise ValueError("cap preservation needs validated terminal cap identities")
+                from ..terminal_caps import preserve_caps_in_fixer
+                preserve_caps_in_fixer(fixer)
+            else:
+                fixer.removeHeterogens(keepWater=False)
             # removeHeterogens strips ALL non-standard residues (HETATM heterogens).
             # A grafted ncAA ligand written as `HETATM ... LIG` is a heterogen, so
             # this call can delete the ENTIRE ligand (or receptor) chain. The
@@ -744,7 +753,7 @@ def compute_binding_energy_implicit(
                     )
             fixer.findMissingResidues()
             fixer.findMissingAtoms()
-            fixer.addMissingAtoms()
+            fixer.addMissingAtoms(seed=int(random_seed))
 
             fixed_raw = work_path / "fixed_heavy.raw.pdb"
             with open(fixed_raw, "w") as f:
@@ -803,7 +812,9 @@ def compute_binding_energy_implicit(
         solvent_xml = _SOLVENT_MAP.get(implicit_solvent, f"implicit/{implicit_solvent}.xml")
         forcefield = app.ForceField(force_field, solvent_xml)
         modeller = app.Modeller(pdb.topology, pdb.positions)
-        modeller.addHydrogens(forcefield, pH=7.0)
+        from ..terminal_caps import cap_residue_templates, verify_terminal_cap_integrity
+        modeller.addHydrogens(forcefield, pH=7.0,
+                              residueTemplates=cap_residue_templates(modeller.topology))
 
         # Persist the "fixed" input used for scoring (useful for debugging/repro).
         fixed_out_raw = work_path / "fixed.raw.pdb"
@@ -825,7 +836,24 @@ def compute_binding_energy_implicit(
             modeller.topology,
             nonbondedMethod=app.NoCutoff,
             constraints=app.HBonds,
+            residueTemplates=cap_residue_templates(modeller.topology),
         )
+        prepared_terminal_caps_integrity = None
+        if expected_terminal_caps:
+            prepared_terminal_caps_integrity = verify_terminal_cap_integrity(
+                modeller.topology,modeller.positions,peptide_chain=ligand_chain,
+                expected_caps=tuple(tuple(cap) for cap in expected_terminal_caps),system=system,
+                stage="parameterized complex",
+            )
+        if expected_disulfide_pairs:
+            from ..cyclic_integrity import verify_disulfide_integrity
+
+            verify_disulfide_integrity(
+                modeller.topology, modeller.positions, peptide_chain=ligand_chain,
+                expected_pairs=tuple(tuple(pair) for pair in expected_disulfide_pairs),
+                system=system, stage="parameterized complex",
+                expected_terminal_caps=tuple(tuple(cap) for cap in (expected_terminal_caps or ())),
+            )
 
         # R2-T04 (defect 4): if head_to_tail closure was present, restore the
         # N1→CN amide as a HarmonicBondForce term (template-matching free).
@@ -1172,6 +1200,23 @@ def compute_binding_energy_implicit(
                 if (not math.isfinite(e_complex_kcal_mol)) or abs(e_complex_kcal_mol) > 5e4:
                     raise ValueError(f"Unstable complex energy after minimization: {e_complex_kcal_mol:.3g} kcal/mol")
 
+            disulfide_integrity = None
+            if expected_disulfide_pairs:
+                disulfide_integrity = verify_disulfide_integrity(
+                    modeller.topology, minimized_positions, peptide_chain=ligand_chain,
+                    expected_pairs=tuple(tuple(pair) for pair in expected_disulfide_pairs),
+                    system=system, stage=f"minimized restart {restart_idx}",
+                    expected_terminal_caps=tuple(tuple(cap) for cap in (expected_terminal_caps or ())),
+                )
+
+            terminal_caps_integrity = None
+            if expected_terminal_caps:
+                terminal_caps_integrity = verify_terminal_cap_integrity(
+                    modeller.topology,minimized_positions,peptide_chain=ligand_chain,
+                    expected_caps=tuple(tuple(cap) for cap in expected_terminal_caps),system=system,
+                    stage=f"minimized restart {restart_idx}",
+                )
+
             minimized_raw = restart_dir / "complex_minimized.raw.pdb"
             with open(minimized_raw, "w") as f:
                 app.PDBFile.writeFile(modeller.topology, minimized_positions, f, keepIds=True)
@@ -1212,6 +1257,7 @@ def compute_binding_energy_implicit(
                     pdb_obj.topology,
                     nonbondedMethod=app.NoCutoff,
                     constraints=app.HBonds,
+                    residueTemplates=cap_residue_templates(pdb_obj.topology),
                 )
                 # R2-T04 (defect 4): if this is the ligand-only system and
                 # head_to_tail was present, restore the amide HarmonicBondForce
@@ -1243,6 +1289,8 @@ def compute_binding_energy_implicit(
                 "e_tbmb_restraint_kcal_mol": e_tbmb_restraint_kj * KJ_MOL_TO_KCAL_MOL,
                 "_minimized_positions_nm": minimized_positions_nm,
                 "minimized_complex_pdb": str(minimized_complex),
+                "disulfide_integrity": disulfide_integrity,
+                "terminal_caps_integrity": terminal_caps_integrity,
                 "receptor_pdb": str(receptor_pdb),
                 "ligand_pdb": str(ligand_pdb),
             }
@@ -1764,6 +1812,12 @@ def compute_binding_energy_implicit(
             "dg_bind_kcal_mol_restarts": [float(x) for x in dg_values.tolist()],
             "selected_restart_index": int(selected_restart_idx),
             "restart_errors": restart_errors,
+            "prepared_terminal_caps_integrity": prepared_terminal_caps_integrity,
+            "terminal_caps_integrity_restarts": [record["terminal_caps_integrity"] for record in restart_records]
+                if expected_terminal_caps else [],
+            "disulfide_integrity_restarts": [
+                record["disulfide_integrity"] for record in restart_records
+            ] if expected_disulfide_pairs else [],
             **cross_terms,
             **cross_terms_restarts,
         }

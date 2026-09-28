@@ -1,4 +1,4 @@
-"""Generate all three PepDDG channels from a validated linear complex."""
+"""Generate all three PepDDG channels from validated supported complexes."""
 
 from __future__ import annotations
 
@@ -81,6 +81,22 @@ def paired_restart_ddg(wild_type: Sequence[float], mutant: Sequence[float]) -> f
     return float(np.median(pairs))
 
 
+def _require_disulfide_integrity(
+    result: dict[str, Any], expected_pairs: tuple[tuple[int, int], ...], n_restarts: int,
+) -> list[dict[str, float]]:
+    records = result.get("disulfide_integrity_restarts")
+    names = {f"{first}-{second}" for first, second in expected_pairs}
+    if not isinstance(records, list) or len(records) != n_restarts:
+        raise ValueError("disulfide integrity record missing or incomplete")
+    for record in records:
+        if not isinstance(record, dict) or set(record) != names or any(
+            not isinstance(value, (int, float)) or not math.isfinite(float(value))
+            or not 1.7 <= float(value) <= 2.5 for value in record.values()
+        ):
+            raise ValueError("disulfide integrity record is invalid")
+    return records
+
+
 def _selected_pdb(spec: ComplexSpec, destination: Path) -> Path:
     import gemmi
 
@@ -91,7 +107,9 @@ def _selected_pdb(spec: ComplexSpec, destination: Path) -> Path:
     if source.suffix.lower() == ".pdb":
         records = [
             line for line in source.read_text().splitlines(keepends=True)
-            if line.startswith("ATOM  ") and len(line) >= 22 and line[21] in selected
+            if (line.startswith("ATOM  ") or (
+                line.startswith("HETATM") and line[17:20].strip() in {"ACE","NH2"}
+                and line[21] == spec.peptide_chain)) and len(line) >= 22 and line[21] in selected
         ]
         destination.write_text("".join(records) + "TER\nEND\n")
     else:
@@ -102,9 +120,20 @@ def _selected_pdb(spec: ComplexSpec, destination: Path) -> Path:
         structure.write_pdb(str(destination))
         records = [
             line for line in destination.read_text().splitlines(keepends=True)
-            if line.startswith("ATOM  ") and len(line) >= 22 and line[21] in selected
+            if (line.startswith("ATOM  ") or (
+                line.startswith("HETATM") and line[17:20].strip() in {"ACE","NH2"}
+                and line[21] == spec.peptide_chain)) and len(line) >= 22 and line[21] in selected
         ]
         destination.write_text("".join(records) + "TER\nEND\n")
+    # Caps are often emitted after TER in deposited PDBs.  Restore the actual
+    # peptide order so native topology inference bonds ACE-C to peptide-N.
+    ordered = []
+    for chain in (*spec.receptor_chains,spec.peptide_chain):
+        chain_records = [line for line in records if line[21] == chain]
+        chain_records.sort(key=lambda line:(int(line[22:26]),line[26],int(line[6:11])))
+        ordered.extend(chain_records)
+        ordered.append("TER\n")
+    destination.write_text("".join(ordered)+"END\n")
     if not destination.is_file() or not any(
         line.startswith("ATOM  ") for line in destination.read_text().splitlines()
     ):
@@ -112,16 +141,57 @@ def _selected_pdb(spec: ComplexSpec, destination: Path) -> Path:
     return destination
 
 
-def _build_variant_pdb(base: Path, variant: Any, output: Path) -> str:
+def _require_terminal_caps_integrity(payload: dict[str,Any], caps: tuple[tuple[str,int], ...],
+                                    n_restarts: int) -> dict[str,Any]:
+    prepared = payload.get("prepared_terminal_caps_integrity")
+    restarts = payload.get("terminal_caps_integrity_restarts")
+    if not isinstance(restarts,list) or len(restarts) != n_restarts:
+        raise ValueError("terminal cap integrity restart coverage is incomplete")
+    expected = {f"{name}:{number}" for name,number in caps}
+    for record in [prepared,*restarts]:
+        if not isinstance(record,dict) or set(record) != expected:
+            raise ValueError("terminal cap integrity identity is incomplete")
+        for name,number in caps:
+            cap = record[f"{name}:{number}"]
+            atom_names = {"C","O","CH3","H1","H2","H3"} if name == "ACE" else {"N","HN1","HN2"}
+            if not isinstance(cap,dict) or set(cap.get("atom_names",[])) != atom_names:
+                raise ValueError("terminal cap integrity atom identity changed")
+            distance = cap.get("amide_distance_angstrom")
+            if not isinstance(distance,(int,float)) or not math.isfinite(distance) or not 1.1 <= distance <= 1.6:
+                raise ValueError("terminal cap integrity amide geometry changed")
+            edges = cap.get("topology_bonds")
+            parameters = cap.get("force_field_bonds")
+            if not isinstance(edges,list) or len(edges) != (6 if name == "ACE" else 3):
+                raise ValueError("terminal cap integrity topology coverage changed")
+            if not isinstance(parameters,list) or len(parameters) != (3 if name == "ACE" else 1):
+                raise ValueError("terminal cap integrity force-field coverage changed")
+            for parameter in parameters:
+                if (not isinstance(parameter,dict) or
+                    not math.isfinite(parameter.get("equilibrium_angstrom",float("nan"))) or
+                    not 1 <= parameter["equilibrium_angstrom"] <= 1.7 or
+                    not math.isfinite(parameter.get("stiffness_kj_mol_nm2",float("nan"))) or
+                    parameter["stiffness_kj_mol_nm2"] <= 0):
+                    raise ValueError("terminal cap integrity force-field parameters changed")
+    return {"prepared":prepared,"restarts":restarts}
+
+
+def _build_variant_pdb(base: Path, variant: Any, output: Path, *, seed: int = 20260302) -> str:
     from ._backend.variant_builder import build_variant_pdb
 
-    return build_variant_pdb(str(base), variant, str(output))
+    preserve_caps = any(line.startswith("HETATM") and line[17:20].strip() in {"ACE","NH2"}
+                        for line in base.read_text().splitlines())
+    from .terminal_caps import scoped_preparation_seed
+    with scoped_preparation_seed(seed):
+        return build_variant_pdb(str(base), variant, str(output),preserve_terminal_caps=preserve_caps,
+                                 preparation_seed=seed)
 
 
 def _score_openmm(pdb_path: str, receptor_chain: str, ligand_chain: str, **kwargs: Any) -> dict[str, Any]:
     from ._backend.implicit_relax_score import compute_binding_energy_implicit
 
-    return compute_binding_energy_implicit(pdb_path, receptor_chain, ligand_chain, **kwargs)
+    from .terminal_caps import scoped_preparation_seed
+    with scoped_preparation_seed(kwargs.get("random_seed",0)):
+        return compute_binding_energy_implicit(pdb_path, receptor_chain, ligand_chain, **kwargs)
 
 
 def _score_mpnn(wt_pdb: Path, spec: ComplexSpec, seed: int, checkpoint: Path) -> dict[str, tuple[float, float]]:
@@ -178,7 +248,7 @@ def run_structural_cohort(
     platform: str = "CPU",
     cpu_threads: int = 2,
 ) -> StructuralResult:
-    """Score a complete one-parent linear substitution cohort from coordinates.
+    """Score a complete one-parent supported substitution cohort from coordinates.
 
     Each WT/mutant energy uses the historical two-stage OBC2 protocol. Outputs
     publish only after all features and cohort scores pass validation.
@@ -209,11 +279,18 @@ def run_structural_cohort(
         coulomb_screening_distance_nm=0.10, coulomb_screening_dielectric=80.0,
         restraint_exclusion_distance_a=10.0, random_seed=seed,
     )
+    if spec.closure_kind == "disulfide":
+        kwargs["expected_disulfide_pairs"] = validation.disulfide_pairs
+    if validation.terminal_caps:
+        kwargs["preserve_terminal_caps"] = True
+        kwargs["expected_terminal_caps"] = validation.terminal_caps
     source_files = [
         Path(__file__), Path(__file__).parent / "api.py",
         Path(__file__).parent / "config.py",
         Path(__file__).parent / "scoring.py",
         Path(__file__).parent / "structure_contract.py",
+        Path(__file__).parent / "cyclic_integrity.py",
+        Path(__file__).parent / "terminal_caps.py",
         Path(__file__).parent / "structure_io.py",
         Path(__file__).parent / "structural_features.py",
         Path(__file__).parent / "mpnn_features.py",
@@ -261,7 +338,7 @@ def run_structural_cohort(
     with tempfile.TemporaryDirectory(prefix="pepddg-structural-") as scratch:
         work = Path(scratch)
         base = _selected_pdb(spec, work / "selected.pdb")
-        wt_pdb = Path(_build_variant_pdb(base, None, work / "wt"))
+        wt_pdb = Path(_build_variant_pdb(base, None, work / "wt",seed=seed))
         mpnn_checkpoint = checkpoint_dir / "mpnn.json"
         if mpnn_checkpoint.exists():
             mpnn = _load_checkpoint(mpnn_checkpoint, identity)
@@ -292,11 +369,22 @@ def run_structural_cohort(
                 )
                 _save_checkpoint(wt_checkpoint, identity, wt)
             variant = VariantSpec(mutation.wt, mutation.chain, mutation.resnum, mutation.mut)
-            mutant_pdb = _build_variant_pdb(base, variant, work / mutation.label)
-            mutant = _score_openmm(
-                mutant_pdb, spec.receptor_chains[0], spec.peptide_chain,
-                **kwargs, restraint_exclusion_residues=exclusion,
-            )
+            mutant_pdb = _build_variant_pdb(base, variant, work / mutation.label,seed=seed)
+            mutant_checkpoint = checkpoint_dir / "mutations" / f"{index:04d}.mutant.json"
+            if mutant_checkpoint.exists():
+                mutant = _load_checkpoint(mutant_checkpoint, identity)
+            else:
+                mutant = _score_openmm(
+                    mutant_pdb, spec.receptor_chains[0], spec.peptide_chain,
+                    **kwargs, restraint_exclusion_residues=exclusion,
+                )
+                _save_checkpoint(mutant_checkpoint, identity, mutant)
+            if spec.closure_kind == "disulfide":
+                wt_integrity = _require_disulfide_integrity(wt, validation.disulfide_pairs, n_restarts)
+                mutant_integrity = _require_disulfide_integrity(mutant, validation.disulfide_pairs, n_restarts)
+            if validation.terminal_caps:
+                wt_caps = _require_terminal_caps_integrity(wt,validation.terminal_caps,n_restarts)
+                mutant_caps = _require_terminal_caps_integrity(mutant,validation.terminal_caps,n_restarts)
             for key in (_BIND_KEY, _XINT_KEY):
                 if key not in wt or key not in mutant:
                     raise ValueError(f"OpenMM missing restart channel {key}: {mutation.label}")
@@ -311,19 +399,32 @@ def run_structural_cohort(
                 "mpnn_neg_llr_complex": mpnn[mutation.label][0],
                 "mpnn_ddg_bind": mpnn[mutation.label][1],
             }
+            if spec.closure_kind == "disulfide":
+                row["disulfide_integrity"] = {"wt": wt_integrity, "mutant": mutant_integrity}
+            if validation.terminal_caps:
+                row["terminal_caps_integrity"] = {"wt":wt_caps,"mutant":mutant_caps}
             _save_checkpoint(row_checkpoint, identity, row)
             rows.append(row)
     features = pd.DataFrame(rows, columns=list(IDENTITY_COLUMNS + FEATURE_COLUMNS))
     scores = score_features(features)
     provenance = {
-        "status": "ok", "scope": "linear_single_receptor_cohort",
+        "status": "ok", "scope": f"{spec.closure_kind}_single_receptor_cohort",
         "structure_sha256": validation.structure_sha256,
         "excluded_water_atoms": validation.excluded_water_atoms,
         "checkpoint_sha256": sha256(weights.read_bytes()).hexdigest(),
         "n_restarts": n_restarts, "seed": seed, "platform": platform.upper(),
+        "preparation_rng": {"python_random_seed":seed,"pdbfixer_missing_atoms_seed":seed,
+                            "caller_python_random_state_restored":True},
         "mpnn_rng": "torch manual seed before complex; isolated chain consumes continued stream",
         "physics_channels": {"bind": _BIND_KEY, "interface": _XINT_KEY},
         "physics_protocol": kwargs, "mutation_ids": list(validation.mutation_ids),
+        "disulfide_pairs": [list(pair) for pair in validation.disulfide_pairs],
+        "terminal_caps": [list(cap) for cap in validation.terminal_caps],
+        "terminal_caps_integrity": {row["mutation"]:row["terminal_caps_integrity"] for row in rows}
+            if validation.terminal_caps else {},
+        "disulfide_integrity": {
+            row["mutation"]: row["disulfide_integrity"] for row in rows
+        } if spec.closure_kind == "disulfide" else {},
         "historical_reproduction_status": "unverified",
         "resume_identity_sha256": identity,
     }

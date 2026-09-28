@@ -53,6 +53,8 @@ class ComplexValidation:
     peptide_residues: tuple[tuple[int, str, str], ...]
     closure_kind: str
     excluded_water_atoms: int
+    disulfide_pairs: tuple[tuple[int, int], ...] = ()
+    terminal_caps: tuple[tuple[str, int], ...] = ()
 
 
 def _icode(value: str) -> str:
@@ -99,7 +101,7 @@ def validate_complex(spec: ComplexSpec) -> ComplexValidation:
     path = Path(spec.structure_path)
     if not path.is_file() or path.suffix.lower() not in {".pdb", ".cif", ".mmcif"}:
         raise ValueError("structure must be an existing PDB or mmCIF file")
-    if spec.closure_kind != "linear":
+    if spec.closure_kind not in {"linear", "disulfide"}:
         raise UnsupportedChemistry(f"unsupported peptide closure: {spec.closure_kind}")
     if not spec.peptide_chain or not spec.receptor_chains:
         raise ValueError("explicit peptide and receptor chain IDs are required")
@@ -111,6 +113,7 @@ def validate_complex(spec: ComplexSpec) -> ComplexValidation:
     structure = gemmi.read_structure(str(path))
     if len(structure) != 1:
         raise ValueError("one coordinate model is required")
+    structure.merge_chain_parts()
     model = structure[0]
     chains = {chain.name: chain for chain in model}
     selected = (spec.peptide_chain,) + spec.receptor_chains
@@ -120,10 +123,14 @@ def validate_complex(spec: ComplexSpec) -> ComplexValidation:
 
     residues: dict[tuple[str, int, str], object] = {}
     excluded_water_atoms = 0
+    from .terminal_caps import CAP_HEAVY_ATOMS, validate_terminal_caps
+    terminal_caps = validate_terminal_caps(chains[spec.peptide_chain], frozenset(_ONE_LETTER))
     for chain_name in selected:
         for residue in chains[chain_name]:
             if residue.name in {"HOH", "WAT"} and residue.het_flag != "A":
                 excluded_water_atoms += len(residue)
+                continue
+            if chain_name == spec.peptide_chain and residue.name in CAP_HEAVY_ATOMS:
                 continue
             if residue.name not in _ONE_LETTER or residue.het_flag != "A":
                 raise UnsupportedChemistry(
@@ -139,17 +146,80 @@ def validate_complex(spec: ComplexSpec) -> ComplexValidation:
                 raise ValueError(f"incomplete backbone at residue {key}")
             residues[key] = residue
 
+    declared_disulfides: set[tuple[int, int]] = set()
     for connection in structure.connections:
-        if spec.peptide_chain in {connection.partner1.chain_name, connection.partner2.chain_name}:
-            raise UnsupportedChemistry("explicit peptide covalent connections require topology validation")
+        connection_chains = {connection.partner1.chain_name, connection.partner2.chain_name}
+        if spec.peptide_chain not in {connection.partner1.chain_name, connection.partner2.chain_name}:
+            continue
+        allowed_cap_edges = set()
+        for name, number in terminal_caps:
+            if name == "ACE":
+                allowed_cap_edges.add(frozenset(((number,"C"),(number+1,"N"))))
+            else:
+                allowed_cap_edges.add(frozenset(((number-1,"C"),(number,"N"))))
+        edge = frozenset(((connection.partner1.res_id.seqid.num,connection.partner1.atom_name),
+                          (connection.partner2.res_id.seqid.num,connection.partner2.atom_name)))
+        if connection_chains == {spec.peptide_chain} and edge in allowed_cap_edges:
+            continue
+        if not (
+            spec.closure_kind == "disulfide"
+            and connection.partner1.chain_name == spec.peptide_chain
+            and connection.partner2.chain_name == spec.peptide_chain
+            and connection.partner1.atom_name == "SG"
+            and connection.partner2.atom_name == "SG"
+        ):
+            raise UnsupportedChemistry("unsupported explicit peptide covalent connection")
+        declared_disulfides.add(tuple(sorted((
+            connection.partner1.res_id.seqid.num,
+            connection.partner2.res_id.seqid.num,
+        ))))
 
     peptide = chains[spec.peptide_chain]
     peptide_residues = [residue for residue in peptide if residue.name in _ONE_LETTER]
+    if spec.closure_kind == "disulfide":
+        for residue in peptide_residues:
+            if residue.name == "GLY":
+                continue
+            atoms = {atom.name: atom for atom in residue}
+            if "CB" not in atoms:
+                raise UnsupportedChemistry(
+                    f"peptide stereochemistry cannot be verified without CB: {residue.seqid.num}"
+                )
+            def coordinate(name: str) -> np.ndarray:
+                point = atoms[name].pos
+                return np.array([point.x, point.y, point.z])
+            ca = coordinate("CA")
+            handedness = float(np.dot(
+                np.cross(coordinate("N") - ca, coordinate("C") - ca),
+                coordinate("CB") - ca,
+            ))
+            if not math.isfinite(handedness) or handedness <= 0.5:
+                raise UnsupportedChemistry(
+                    f"inverted peptide stereochemistry at {residue.seqid.num}"
+                )
     sulfurs = [
         (residue.seqid.num, atom)
         for residue in peptide_residues if residue.name == "CYS"
         for atom in residue if atom.name == "SG"
     ]
+    receptor_sulfurs = [
+        atom
+        for chain_name in spec.receptor_chains
+        for residue in chains[chain_name] if residue.name == "CYS"
+        for atom in residue if atom.name == "SG"
+    ]
+    for _, peptide_sulfur in sulfurs:
+        peptide_position = np.array([
+            peptide_sulfur.pos.x, peptide_sulfur.pos.y, peptide_sulfur.pos.z
+        ])
+        for receptor_sulfur in receptor_sulfurs:
+            receptor_position = np.array([
+                receptor_sulfur.pos.x, receptor_sulfur.pos.y, receptor_sulfur.pos.z
+            ])
+            if np.linalg.norm(peptide_position - receptor_position) < 2.5:
+                raise UnsupportedChemistry("cross-chain sulfur contact is unsupported")
+    disulfide_pairs: list[tuple[int, int]] = []
+    bonded_cysteines: set[int] = set()
     for index, (first_number, first) in enumerate(sulfurs):
         for second_number, second in sulfurs[index + 1:]:
             if first_number == second_number:
@@ -159,7 +229,16 @@ def validate_complex(spec: ComplexSpec) -> ComplexValidation:
                 - np.array([second.pos.x, second.pos.y, second.pos.z])
             )
             if distance < 2.5:
-                raise UnsupportedChemistry("possible peptide disulfide closure detected")
+                if spec.closure_kind == "linear":
+                    raise UnsupportedChemistry("possible peptide disulfide closure detected")
+                if first_number in bonded_cysteines or second_number in bonded_cysteines:
+                    raise UnsupportedChemistry("ambiguous peptide disulfide pairing")
+                disulfide_pairs.append(tuple(sorted((first_number, second_number))))
+                bonded_cysteines.update((first_number, second_number))
+    if spec.closure_kind == "disulfide" and not disulfide_pairs:
+        raise UnsupportedChemistry("declared disulfide closure has no SG-SG pair")
+    if not declared_disulfides.issubset(disulfide_pairs):
+        raise UnsupportedChemistry("disulfide record disagrees with SG-SG coordinate pairing")
     if len(peptide_residues) >= 2:
         first = next(atom for atom in peptide_residues[0] if atom.name == "N")
         last = next(atom for atom in peptide_residues[-1] if atom.name == "C")
@@ -193,6 +272,8 @@ def validate_complex(spec: ComplexSpec) -> ComplexValidation:
         observed = _ONE_LETTER[residue.name]
         if observed != mutation.wt:
             raise ValueError(f"wild-type mismatch for {mutation.label}: expected {mutation.wt}, structure {observed}")
+        if spec.closure_kind == "disulfide" and mutation.resnum in bonded_cysteines:
+            raise UnsupportedChemistry("mutation of a closure-forming cysteine is unsupported")
         identity = (*key, mutation.mut)
         if identity in identities:
             raise ValueError("duplicate molecular mutation identity")
@@ -210,4 +291,6 @@ def validate_complex(spec: ComplexSpec) -> ComplexValidation:
         peptide_residues=peptide_listing,
         closure_kind=spec.closure_kind,
         excluded_water_atoms=excluded_water_atoms,
+        disulfide_pairs=tuple(sorted(disulfide_pairs)),
+        terminal_caps=terminal_caps,
     )

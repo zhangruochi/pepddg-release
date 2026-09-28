@@ -11,7 +11,9 @@ Use an existing `.pdb`, `.cif` or `.mmcif` file with one coordinate model.
 Specify exact chain IDs as they appear in that file. The peptide and receptor
 must have standard amino acids and complete N/CA/C/O backbone atoms. Crystal
 waters are removed for the implicit-solvent calculation and their atom count
-is recorded; other selected-chain heterogens are rejected. The tool
+is recorded. Native peptide ACE and NH2 caps are retained, parameterized and
+checked before and after every restart; other selected-chain heterogens are
+rejected. The tool
 checks the wild-type residue at every numbered position before constructing a
 mutant. Numbering, insertion code and chain mapping are molecular identity,
 not optional labels.
@@ -33,14 +35,17 @@ physical system, so report the selected pair with any result.
 Peptide residue numbers must be consecutive, without insertion codes; a gap
 would make the structural and ProteinMPNN position maps disagree.
 
-The validated structural path currently supports **linear peptides only**.
-Head-to-tail, side-chain, linker and disulfide cyclization, covalent
-connections, modified amino acids, ligands and alternate atom locations need
-a separately validated topology workflow. Explicit or suspected closures are
-rejected where detectable; absence of a rejection is not proof that an
-unannotated chemistry is supported. For cyclic peptide optimization, use the
-feature-table interface only if all channels were produced by a separately
-validated cyclic protocol, and retain that protocol's provenance.
+The general structural path supports linear peptides plus the explicitly
+validated disulfide peptide topology and the exact ACE/NH2 terminal cap graphs
+used by the included 5XCO reproduction example. Disulfide connectivity,
+geometry and force-field bonds are checked; cap atom identities, amide
+geometry and force-field bonds are checked across preparation and restarts.
+This narrow support does not extend to head-to-tail cyclization, linkers,
+modified amino acids, ligands or other covalent chemistries. Explicit or
+suspected unsupported closures are rejected where detectable; absence of a
+rejection is not proof that unannotated chemistry is supported. See the
+[paper cyclic-target smoke](../examples/skempi_cyclic/README.md) for exact
+supported structures, cofactor-free preparation and the reproduction command.
 
 ## Commands
 

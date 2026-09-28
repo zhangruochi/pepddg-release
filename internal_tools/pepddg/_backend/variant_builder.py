@@ -128,6 +128,8 @@ def build_variant_pdb(
     ph: float = 7.0,
     keep_water: bool = False,
     strict_wt_check: bool = True,
+    preserve_terminal_caps: bool = False,
+    preparation_seed: Optional[int] = None,
 ) -> str:
     """
     Build a WT or mutant complex PDB using PDBFixer.
@@ -173,7 +175,11 @@ def build_variant_pdb(
                 )
 
     fixer = PDBFixer(filename=str(with_conect))
-    fixer.removeHeterogens(keepWater=bool(keep_water))
+    if preserve_terminal_caps:
+        from ..terminal_caps import preserve_caps_in_fixer
+        preserve_caps_in_fixer(fixer,keep_water=keep_water)
+    else:
+        fixer.removeHeterogens(keepWater=bool(keep_water))
     fixer.findNonstandardResidues()
     fixer.replaceNonstandardResidues()
 
@@ -196,8 +202,19 @@ def build_variant_pdb(
     # modified residues or incomplete templates, and is not required for fast scoring.
     fixer.missingResidues = {}
     fixer.findMissingAtoms()
-    fixer.addMissingAtoms()
-    fixer.addMissingHydrogens(float(ph))
+    if preparation_seed is None:
+        fixer.addMissingAtoms()
+    else:
+        fixer.addMissingAtoms(seed=int(preparation_seed))
+    if preserve_terminal_caps:
+        from openmm.app import Modeller, ForceField
+        from ..terminal_caps import cap_residue_templates
+        modeller = Modeller(fixer.topology,fixer.positions)
+        modeller.addHydrogens(ForceField("amber14-all.xml","implicit/obc2.xml"),
+                             pH=float(ph),residueTemplates=cap_residue_templates(modeller.topology))
+        fixer.topology,fixer.positions = modeller.topology,modeller.positions
+    else:
+        fixer.addMissingHydrogens(float(ph))
 
     raw_out = out_dir_path / f"{variant_name}.fixed.pdb"
     with open(raw_out, "w", encoding="utf-8") as f:

@@ -15,8 +15,9 @@ company, requires a separate written grant from the relevant rights holders.
 The historical MIT code can still be used according to its existing MIT terms.
 
 The bundled ProteinMPNN utility and `v_48_020.pt` model retain their own MIT
-license in `internal_tools/pepddg/_backend/PROTEINMPNN_LICENSE`. Dependency
-licenses and dataset terms remain separate. See
+license in `internal_tools/pepddg/_backend/PROTEINMPNN_LICENSE`. The SKEMPI-derived structures and mutation inputs in
+`examples/skempi_cyclic/` retain CC BY4.0; see their README for attribution and
+modifications. Dependency licenses and dataset terms remain separate. See
 `research/pepddg_v5/data/DATA_PROVENANCE.md` for shipped data provenance.
 
 For commercial licensing inquiries, contact the repository owner at

@@ -1,0 +1,55 @@
+{
+  "checkpoint_sha256": "c9cb4a671d79604111231f8dbfc7c590e06f1197453b7a6854ac6661a642f5bd",
+  "disulfide_integrity": {},
+  "disulfide_pairs": [],
+  "excluded_water_atoms": 0,
+  "historical_reproduction_status": "unverified",
+  "mpnn_rng": "torch manual seed before complex; isolated chain consumes continued stream",
+  "mutation_ids": [
+    "TB1A",
+    "SB2A",
+    "FB3A",
+    "EB5A",
+    "YB6A",
+    "WB7A",
+    "NB8A",
+    "LB9A",
+    "LB10A",
+    "SB11A"
+  ],
+  "n_restarts": 7,
+  "physics_channels": {
+    "bind": "dg_bind_kcal_mol_restarts",
+    "interface": "e_cross_interface_total_screened_kcal_mol_restarts"
+  },
+  "physics_protocol": {
+    "aggregate": "median",
+    "coulomb_screening_dielectric": 80.0,
+    "coulomb_screening_distance_nm": 0.1,
+    "cpu_threads": 2,
+    "cross_interaction_interface_cutoff_a": 8.0,
+    "jitter_nm": 0.005,
+    "min_protocol": "twostage",
+    "n_restarts": 7,
+    "platform": "CUDA",
+    "random_seed": 20260302,
+    "restraint_exclusion_distance_a": 10.0,
+    "restraint_k1": 1000.0,
+    "restraint_k2": 100.0,
+    "stage1_iters": 200,
+    "stage2_iters": 500
+  },
+  "platform": "CUDA",
+  "preparation_rng": {
+    "caller_python_random_state_restored": true,
+    "pdbfixer_missing_atoms_seed": 20260302,
+    "python_random_seed": 20260302
+  },
+  "resume_identity_sha256": "808753118076271b624784cf96b88e4b62f7834931dbb98d88bd244b2e50a843",
+  "scope": "linear_single_receptor_cohort",
+  "seed": 20260302,
+  "status": "ok",
+  "structure_sha256": "fdc71a78229bec60f66ab726dee4418a67fd689fd1c322eeafd8762f836ddff0",
+  "terminal_caps": [],
+  "terminal_caps_integrity": {}
+}

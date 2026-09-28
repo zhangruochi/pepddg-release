@@ -1,0 +1,73 @@
+{
+  "data_manifest_sha256": "21dd9ce4046d5b999bc711cf3b57cd297e9e7ca46f2869ddf5d759c57f1b5927",
+  "metrics_report_sha256": "8a8c98ec1c9f13ed69c0ffc317e932d26f605639da7d67c985d370df2d44eaee",
+  "pepddg_release_commit": "2b0b4c7eeaf9d6cf8e1428c5618f360199bf47dd",
+  "proteinmpnn_checkpoint_sha256": "c9cb4a671d79604111231f8dbfc7c590e06f1197453b7a6854ac6661a642f5bd",
+  "runtime_evidence_bundle_sha256": "bceba1b1e77009b59a35035ec8cdc6f6591f601cd136205c7c20674bb7db4a43",
+  "runtime_evidence_note": "Full restart sidecars are not distributed in this repository. Their archived bundle SHA256 is retained for traceability; public per-target provenance and raw channels are included.",
+  "schema": "pepddg-cyclic-reference-run/v1",
+  "target_runs": {
+    "1SMF": {
+      "features_sha256": "0df4258e0d60f1be02c664a281a6b50ed8c04186469825397d1e4c80a8b21219",
+      "job_request_target": "1SMF",
+      "n_restarts": 7,
+      "platform": "CUDA",
+      "provenance_sha256": "a0cfa90e646efa780662323dd29f43da56b2c654eee2f58998a62655d86c95da",
+      "route": "public-cli",
+      "runner_sha256": "74442c2046ef58adbe7d21716ce4e1eb2f71f4af4d0f9f36b0f8e466d9c55bfc",
+      "scores_sha256": "5ab20128620a3df3af453c8d2d217b0c74b1f7132031bd5348bb97f3b59d48d5",
+      "seed": 20260302,
+      "structure_sha256": "35dbaca8d126a6a2f376dcb9d8b00ee04163ea6521e2fd8a2862e9c0cf0f0ea5"
+    },
+    "3EQS": {
+      "features_sha256": "12d7eb71450fea6376d4cce67c2d673f028818d53826caade77c356e77ccdde5",
+      "job_request_target": "3EQS",
+      "n_restarts": 7,
+      "platform": "CUDA",
+      "provenance_sha256": "ae27d1f0e63b9b3c76908e9627a26d0b5bcbb7602e9f6013405e2d049ea258db",
+      "route": "public-cli",
+      "runner_sha256": "74442c2046ef58adbe7d21716ce4e1eb2f71f4af4d0f9f36b0f8e466d9c55bfc",
+      "scores_sha256": "14ef0f410ccc5f97d31e9bbe29a0205058725e4975ab88c26e4d11977cae742e",
+      "seed": 20260302,
+      "structure_sha256": "fdc71a78229bec60f66ab726dee4418a67fd689fd1c322eeafd8762f836ddff0"
+    },
+    "3EQY": {
+      "features_sha256": "889b39862c7f39879656a2208e8f15b56addb61f5faa642c0bd4a6e69aad3c19",
+      "job_request_target": "3EQY",
+      "n_restarts": 7,
+      "platform": "CUDA",
+      "provenance_sha256": "2c7e37361e4851cc36073f8e688d8f3cc710eb4d4bb8aa32defc2b9e8a9bfb17",
+      "route": "public-cli",
+      "runner_sha256": "74442c2046ef58adbe7d21716ce4e1eb2f71f4af4d0f9f36b0f8e466d9c55bfc",
+      "scores_sha256": "74d19baac36aff7cf3ae50694aaa28d512bf00dda550b23c28b8cc421c444e88",
+      "seed": 20260302,
+      "structure_sha256": "ba75d812e485f617b163acadabf0c6b73d29fdc738ddd8405f5026d9b3d29562"
+    },
+    "5XCO": {
+      "features_sha256": "b0c6c2ae4725dfbe824501f637a5c86fec2bf824b052614423a2b2466bc84463",
+      "job_request_target": "5XCO",
+      "n_restarts": 7,
+      "platform": "CUDA",
+      "provenance_sha256": "ef3a007e6f53c5e3e7dd58692e6511baf440379cca021ed8f8c0e5deee26e73c",
+      "route": "public-cli",
+      "runner_sha256": "3ac17398be8563885ed3461505e5e3ccce0eb22e24e2ac356407ec65a1eb74de",
+      "scores_sha256": "d1ee2d70b93c99b9dac65acf6ce0c9a9c1ba36e990d039880da854a85b129389",
+      "seed": 20260302,
+      "structure_sha256": "5262187af401dbb90cb532dacdfc5b98c32cd8278f8c38316eb37025f49227c8"
+    }
+  },
+  "visualization": {
+    "files_sha256": {
+      "report/experiment_scatter.png": "cf920d2b4fd134a2a88bdf74e5d3027607a2104437820bba91ed3333ca22f91f",
+      "report/experiment_scatter.svg": "049ece3fc32a58d4f0629c2fce68b35e76457967c428b5fdb23ed2ac78bedd77",
+      "report/ranking_scatter.png": "96249143cb8f6ff7682eba4ef61f42d9df8d7b3af2182fabdeb505108eb27738",
+      "report/ranking_scatter.svg": "7e4a8890d96f442fee4e7896259f91561abab9709180f069c3994a4d4cd21e48",
+      "report/target_correlations.png": "ceaeee33e4bdd7008110db00187e34ef843a884756049ab8c1b4692fa44d85d6",
+      "report/target_correlations.svg": "868698c37137e118976be38b7defc4bb657e139bb61734947a44c841ace77368"
+    },
+    "generator": "examples/skempi_cyclic/report.py",
+    "generator_sha256": "33523345edbd58ffc930bc8cba8e7d66d7ac7f47e70eb043a8f073cd1bb89d37",
+    "inference_rerun": false
+  },
+  "wheel_sha256": "226a7786ea4e92b5bd989c4aebbea048ecf60cdd36a556af8a8429ca574c8fbb"
+}
