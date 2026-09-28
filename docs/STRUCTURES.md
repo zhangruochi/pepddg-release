@@ -11,7 +11,9 @@ Use an existing `.pdb`, `.cif` or `.mmcif` file with one coordinate model.
 Specify exact chain IDs as they appear in that file. The peptide and receptor
 must have standard amino acids and complete N/CA/C/O backbone atoms. Crystal
 waters are removed for the implicit-solvent calculation and their atom count
-is recorded; other selected-chain heterogens are rejected. The tool
+is recorded. Native peptide ACE and NH2 caps are retained, parameterized and
+checked before and after every restart; other selected-chain heterogens are
+rejected. The tool
 checks the wild-type residue at every numbered position before constructing a
 mutant. Numbering, insertion code and chain mapping are molecular identity,
 not optional labels.
@@ -40,12 +42,20 @@ It checks the declared S–S pairs, peptide stereochemistry, force-field bonds
 and every minimized restart. A full real-channel run and independent scientific
 review are still pending; do not use preview results to rank cyclic designs yet.
 Head-to-tail, side-chain and linker cyclization, other covalent connections,
-modified amino acids, ligands and alternate atom locations remain unsupported.
+modified amino acids, other terminal modifications, ligands and alternate atom locations remain unsupported.
 Explicit or suspected unsupported closures are rejected where detectable;
 absence of a rejection is not proof that unannotated chemistry is supported.
 For cyclic peptide optimization, use the feature-table interface only if all
 channels were produced by a separately validated cyclic protocol, and retain
 that protocol's provenance.
+
+The [official SKEMPI examples](../examples/skempi_cyclic/README.md) separately
+prepare explicitly declared cofactor-free receptor inputs. They retain 5XCO's
+acetyl and primary-amide caps. Cap identities, actual topology/force-field bonds,
+amide geometry and every restart's integrity are recorded in checkpoints and
+provenance. ProteinMPNN models the amino-acid backbone; cap effects enter the
+physical channels. This preparation does not imply support for arbitrary
+receptor ligands or peptide modifications.
 
 ## Commands
 
