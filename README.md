@@ -149,24 +149,55 @@ python examples/skempi_cyclic/report.py \
 
 ## Python API
 
-Score an existing raw-feature cohort in a notebook:
+Give PepDDG the **WT peptide–receptor complex** and mutations written as
+`WT-residue + PDB-residue-number + mutant-residue` (for example, `T2A`).
+No mutation CSV or input objects are required:
 
 ```python
-import pandas as pd
-from pepddg import score_features
+import pepddg
 
-features = pd.read_csv("examples/raw_features.csv")
-result = score_features(features)
-print(result.table)
+# One substitution: raw prediction channels; relative rank is unavailable.
+one = pepddg.predict(
+    "examples/skempi_cyclic/data/1SMF/complex.pdb", "T2A",
+    peptide_chain="I", receptor_chain="E",
+    output_dir="results/one-mutation",
+)
+print(one[["mutation", "ddg_xint_iface", "ddg_bind_proxy", "mpnn_ddg_bind"]])
+
+# A series of independent single mutants, ranked together.
+batch = pepddg.predict(
+    "examples/skempi_cyclic/data/1SMF/complex.pdb", ["T2A", "K3A", "S4A"],
+    peptide_chain="I", receptor_chain="E",
+    output_dir="results/mutation-series",
+)
+print(batch.sort_values("rankscore_pepddg_zs"))
 ```
 
-For structural inference, use `ComplexSpec`, `MutationSpec` and
-`run_structural_cohort`; see the [complete Python example](docs/STRUCTURES.md#commands).
-The raw-feature interface requires `target`, `parent_id`, `mutation`,
-`ddg_xint_iface`, `ddg_bind_proxy`, `n_iface_contacts_8a`, `n_neighbors_10a`,
-`mpnn_neg_llr_complex` and `mpnn_ddg_bind`. It rejects mixed cohorts,
+The return value is a pandas DataFrame containing mutation identities, raw
+channels and ranks. `batch.attrs["provenance"]` records the protocol and input
+hashes; `batch.attrs["output_dir"]` locates retained outputs and checkpoints.
+An omitted output directory is allocated automatically and retained. Supply
+an explicit persistent path to resume interrupted work.
+
+Linear and validated disulfide topology are recognized automatically; all
+existing chemistry checks still apply. Set `closure="linear"` or
+`closure="disulfide"` to require a topology, and `platform="CUDA"` for a
+compatible CUDA installation. The default remains seven paired restarts.
+
+Numbers refer to the supplied PDB/mmCIF residue IDs, **not sequence offsets**.
+A list means independent single substitutions, not a combined multi-site
+mutant. For one candidate, relative ranks are missing (`NaN`) and
+`one.attrs["rank_available"]` is false: the underlying raw channels remain
+available. Neither the energy proxies nor rank score is a calibrated binding
+ΔΔG prediction. See the [Python API guide](docs/STRUCTURES.md#python-api).
+
+For existing raw features, `pepddg.score_features(frame)` remains available.
+It requires `target`, `parent_id`, `mutation`, `ddg_xint_iface`,
+`ddg_bind_proxy`, `n_iface_contacts_8a`, `n_neighbors_10a`,
+`mpnn_neg_llr_complex` and `mpnn_ddg_bind`, and rejects mixed cohorts,
 duplicates, missing/nonfinite values, experimental labels, precomputed ranks
-and extra columns.
+and extra columns. `ComplexSpec`, `MutationSpec` and `run_structural_cohort`
+remain available for advanced callers.
 
 ## Reproducibility beyond the examples
 

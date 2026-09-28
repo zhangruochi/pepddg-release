@@ -108,13 +108,20 @@ def score_features(frame: pd.DataFrame) -> ScoreResult:
     ).to_numpy().any():
         raise RuntimeError("scoring did not preserve cohort row identities")
 
+    rank_available = len(scored) > 1
+    if not rank_available:
+        for column in scored.columns:
+            if str(column).startswith("rankscore_"):
+                scored[column] = np.nan
+
     payload = prepared[list(IDENTITY_COLUMNS) + list(FEATURE_COLUMNS)].to_json(
         orient="records", double_precision=15
     )
     summary = {
         "status": "ok",
         "method": "pepddg_zs",
-        "score_kind": "relative_cohort_rank",
+        "score_kind": "relative_cohort_rank" if rank_available else "raw_channels_only",
+        "rank_available": rank_available,
         "lower_is_better": True,
         "target": prepared["target"].iloc[0],
         "parent_id": prepared["parent_id"].iloc[0],
